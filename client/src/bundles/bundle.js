@@ -1,4 +1,13 @@
-// Include any legacy Entwine wrappers
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-// Include boot entrypoint
-require('boot');
+function App() {
+  return (
+    <div>Edit with Fabricator</div>
+  );
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('fabricator-app')
+);

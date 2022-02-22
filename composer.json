@@ -1,6 +1,6 @@
 {
-    "name": "silverstripe-module/skeleton",
-    "description": "A skeleton for SilverStripe modules.",
+    "name": "silverstripe/fabricator",
+    "description": "SilverStripe Fabricator",
     "type": "silverstripe-vendormodule",
     "keywords": [
         "silverstripe",
@@ -8,8 +8,10 @@
     ],
     "license": "BSD-3-Clause",
     "require": {
+        "php": ">=7.4",
         "silverstripe/framework": "^4.0",
-        "silverstripe/admin": "^1.0"
+        "silverstripe/admin": "^1.0",
+        "silverstripe/vendor-plugin": "^1.5.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",
@@ -17,18 +19,22 @@
     },
     "autoload": {
         "psr-4": {
-            "SilverStripeModule\\Skeleton\\": "src/",
-            "SilverStripeModule\\Skeleton\\Tests\\": "tests/"
+            "SilverStripe\\Fabricator\\": "src/",
+            "SilverStripe\\Fabricator\\Tests\\": "tests/"
         }
     },
+    "scripts": {
+        "silverstripe-standards": [
+            "@phpcs"
+        ],
+        "phpcs": "phpcs src tests --standard=vendor/jdolba/silverstripe-coding-standards/definitions/php/phpcs-ss4.xml --extensions=php --encoding=utf-8",
+        "phpcbf": "phpcbf src tests --standard=vendor/jdolba/silverstripe-coding-standards/definitions/php/phpcs-ss4.xml --extensions=php --encoding=utf-8",
+        "phpcs-fix": "@phpcbf"
+    },
     "extra": {
-        "branch-alias": {
-            "dev-master": "2.x-dev"
-        },
         "expose": [
-            "client/dist"
+            "client"
         ]
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "minimum-stability": "dev"
 }

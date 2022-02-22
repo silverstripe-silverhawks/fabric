@@ -1,6 +1,6 @@
 {
-  "name": "silverstripe-module-skeleton",
-  "description": "Description of your module",
+  "name": "silverstripe-fabricator",
+  "description": "silverstripe fabricator",
   "main": "./client/src/boot/index.js",
   "author": "You",
   "engines": {
@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "babel-polyfill": "6.7.4",
-    "react": "^16.8.3"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@silverstripe/eslint-config": "^0.0.5",
