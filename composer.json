@@ -1,5 +1,5 @@
 {
-    "name": "silverstripe-module/skeleton",
+    "name": "silverstripe/fabricator",
     "description": "A skeleton for SilverStripe modules.",
     "type": "silverstripe-vendormodule",
     "keywords": [
