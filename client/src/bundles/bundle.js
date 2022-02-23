@@ -7,7 +7,9 @@ function App() {
   );
 }
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('fabricator-app')
-);
+window.document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <App />,
+    document.getElementById('fabricator-app')
+  );
+});
