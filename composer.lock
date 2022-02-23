@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "616b0cbb7231354d68d77e926cd34338",
+    "content-hash": "d04085594456b92ee3955aa305948fbe",
     "packages": [
         {
             "name": "bramus/ansi-php",
@@ -1670,12 +1670,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/silverstripe/silverstripe-admin.git",
-                "reference": "805a53c77bc02aa00dc0b269eeef4b74a1bb2989"
+                "reference": "d466ec3f226a44ffc365c0e4fca0df28e1b9cf39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silverstripe/silverstripe-admin/zipball/805a53c77bc02aa00dc0b269eeef4b74a1bb2989",
-                "reference": "805a53c77bc02aa00dc0b269eeef4b74a1bb2989",
+                "url": "https://api.github.com/repos/silverstripe/silverstripe-admin/zipball/d466ec3f226a44ffc365c0e4fca0df28e1b9cf39",
+                "reference": "d466ec3f226a44ffc365c0e4fca0df28e1b9cf39",
                 "shasum": ""
             },
             "require": {
@@ -1733,7 +1733,7 @@
                 "issues": "https://github.com/silverstripe/silverstripe-admin/issues",
                 "source": "https://github.com/silverstripe/silverstripe-admin/tree/1"
             },
-            "time": "2022-02-21T21:24:23+00:00"
+            "time": "2022-02-22T22:52:44+00:00"
         },
         {
             "name": "silverstripe/assets",
@@ -5135,12 +5135,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "dd8a7096b04427daf6ed91acbdde90cd7d4d2315"
+                "reference": "154a68891806abc963404e26a01a816bbe43cf28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/dd8a7096b04427daf6ed91acbdde90cd7d4d2315",
-                "reference": "dd8a7096b04427daf6ed91acbdde90cd7d4d2315",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/154a68891806abc963404e26a01a816bbe43cf28",
+                "reference": "154a68891806abc963404e26a01a816bbe43cf28",
                 "shasum": ""
             },
             "require": {
@@ -5184,7 +5184,7 @@
                 "source": "https://github.com/squizlabs/PHP_CodeSniffer",
                 "wiki": "https://github.com/squizlabs/PHP_CodeSniffer/wiki"
             },
-            "time": "2022-02-14T22:05:31+00:00"
+            "time": "2022-02-22T22:18:48+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -5248,14 +5248,10 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "silverstripe/vendor-plugin": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {
-        "php": ">=7.4"
-    },
+    "platform": [],
     "platform-dev": [],
     "plugin-api-version": "2.1.0"
 }
