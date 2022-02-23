@@ -13,10 +13,16 @@ class APIService extends Controller
         return 'Hello from the API';
     }
 
+    public function getPageInformation(string $className, int $pageId) {
+
+    }
+
     public function getAllowedFieldsOnPage(string $className)
     {
-        // $pageObjects = DataObject::get($className)->first()->toMap();
-        $pageObjects = DataObject::get($className)->first()->fieldLabels();
+        $pageObjects = DataObject::get($className)->first()->toMap();
+        // $pageObjects = DataObject::get($className)->first()->getQueriedDatabaseFields();
+
+        // Debug::dump($pageObjects->HeadlineText);
         return $pageObjects;
     }
 
