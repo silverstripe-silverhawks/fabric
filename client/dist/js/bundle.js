@@ -74,6 +74,8 @@
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = __webpack_require__("./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
@@ -84,16 +86,57 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function App() {
-  return _react2.default.createElement(
-    'div',
-    null,
-    'Edit with Fabricator'
-  );
-}
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Fabricator = function (_React$Component) {
+  _inherits(Fabricator, _React$Component);
+
+  function Fabricator(props) {
+    _classCallCheck(this, Fabricator);
+
+    var _this = _possibleConstructorReturn(this, (Fabricator.__proto__ || Object.getPrototypeOf(Fabricator)).call(this, props));
+
+    var ROOT = document.querySelector('#fabricator-app');
+    var allowedFields = ROOT.getAttribute('allowed-fields');
+    var hasBlocks = ROOT.getAttribute('has-blocks');
+
+    _this.state = {
+      allowedFields: allowedFields,
+      hasBlocks: hasBlocks
+    };
+
+    console.log(_this.state);
+    return _this;
+  }
+
+  _createClass(Fabricator, [{
+    key: 'render',
+    value: function render() {
+      var hasBlocks = this.state.hasBlocks;
+      var menuState = '';
+      if (hasBlocks) {
+        menuState = 'Elemental';
+      } else {
+        menuState = 'PagesOnly';
+      }
+
+      return _react2.default.createElement(
+        'div',
+        null,
+        menuState
+      );
+    }
+  }]);
+
+  return Fabricator;
+}(_react2.default.Component);
 
 window.document.addEventListener('DOMContentLoaded', function () {
-  _reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById('fabricator-app'));
+  _reactDom2.default.render(_react2.default.createElement(Fabricator, null), document.getElementById('fabricator-app'));
 });
 
 /***/ }),
