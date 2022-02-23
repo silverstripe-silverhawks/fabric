@@ -17,15 +17,17 @@ class FabricatorExtension extends DataExtension
 
         $hasElemental = false;
         $elementalAreaId = -1;
-        if($this->owner->hasField('ElementalAreaID')) {
+        if ($this->owner->hasField('ElementalAreaID')) {
             $hasElemental = true;
             $elementalAreaId = $this->owner->ElementalAreaID;
         }
 
-        $allowedFields = $service->getPageInformation($this->owner->ClassName, $this->owner->ID, $elementalAreaId);
+        // $allowedFields = $service->getPageInformation($this->owner->ClassName, $this->owner->ID, $elementalAreaId);
+        $allowedFields = $service->getAllowedFieldsOnPage($this->owner->ClassName);
+
         $fieldSpec = DataObject::getSchema()->fieldSpecs($this->owner->ClassName);
 
-        Debug::dump($this->owner->toMap()); exit;
+        // Debug::dump($hasElemental);
         $fabricatorReact = SSViewer::execute_template(
             'Fabricator',
             $this->owner,
@@ -33,7 +35,7 @@ class FabricatorExtension extends DataExtension
                 'Fabricator' => 'Fabricator',
                 'Stage' => Versioned::get_stage(),
                 'AllowedFields' => json_encode($allowedFields),
-                'HasBlocks' => 'false'
+                'HasBlocks' => json_encode($hasElemental)
             ]
         );
 

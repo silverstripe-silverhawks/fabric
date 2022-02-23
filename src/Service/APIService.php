@@ -13,7 +13,7 @@ class APIService extends Controller
         return 'Hello from the API';
     }
 
-    public function getPageInformation(string $className, int $pageId) {
+    public function getPageInformation(string $className, int $pageId, int $elementalAreaId) {
 
     }
 
@@ -22,7 +22,7 @@ class APIService extends Controller
         $pageObjects = DataObject::get($className)->first()->toMap();
         // $pageObjects = DataObject::get($className)->first()->getQueriedDatabaseFields();
 
-        // Debug::dump($pageObjects->HeadlineText);
+        // Debug::dump($pageObjects);
         return $pageObjects;
     }
 
