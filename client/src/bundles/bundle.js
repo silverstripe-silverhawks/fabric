@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+
 class Fabricator extends React.Component {
   constructor(props) {
     super(props);
@@ -31,10 +32,24 @@ class Fabricator extends React.Component {
     return (
       <div>
         {menuState}
+        <ContactsList />
       </div>
     );
   }
 }
+
+class ContactsList extends React.Component{
+  render(){ 
+    return(
+      <ul>
+          <li>
+              Joe 02712345678
+          </li>
+      </ul>
+    );
+  }
+  }
+
 
 window.document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
