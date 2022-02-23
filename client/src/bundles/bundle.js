@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ContactList from '../components/ContactList';
 
 
 class Fabricator extends React.Component {
@@ -32,24 +33,11 @@ class Fabricator extends React.Component {
     return (
       <div>
         {menuState}
-        <ContactsList />
+        <ContactList />
       </div>
     );
   }
 }
-
-class ContactsList extends React.Component{
-  render(){ 
-    return(
-      <ul>
-          <li>
-              Joe 02712345678
-          </li>
-      </ul>
-    );
-  }
-  }
-
 
 window.document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
