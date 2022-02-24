@@ -1,10 +1,10 @@
 
 import React from 'react';
 
-const ContactList = () => {
+function ContactList () {
   return (
     <ul>
-      <li>Joe 02712345678</li>
+      <li>Joe</li>
     </ul>
   );
 };

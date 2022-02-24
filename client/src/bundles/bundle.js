@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ContactList from '../components/ContactList';
+import Navbar from '../components/Navbar';
 
 
 class Fabricator extends React.Component {
@@ -33,7 +33,7 @@ class Fabricator extends React.Component {
     return (
       <div>
         {menuState}
-        <ContactList />
+        <Navbar />
       </div>
     );
   }

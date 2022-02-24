@@ -1,8 +1,81 @@
 // Import core variables from silverstripe/admin
-@import "variables";
+// @import "variables";
 
 // Import all of your SCSS stylesheets using relative paths from "components"
 // e.g. @import '../components/MyComponent/MyComponent.scss';
 
 // Import any legacy SCSS stylesheets
 // e.g. @import '../styles/MyComponent-ModelAdmin-legacy.scss
+.navbar {
+    background-color: #060b26;
+    height: 80px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+  }
+  
+  .menu-bars {
+    margin-left: 2rem;
+    font-size: 2rem;
+    background: none;
+    color: white;
+  }
+  
+  .nav-menu {
+    background-color: white;
+    color:  #060b26;
+    width: 360px;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    transition: 850ms;
+  }
+  
+  .nav-menu.active {
+    left: 0;
+    transition: 350ms;
+  }
+  
+  .nav-text {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 3px 0px 3px 0px;
+    list-style: none;
+    height: 60px;
+  }
+  
+  .nav-title{
+    font-size: 1.5rem;
+    text-decoration: underline;
+  }
+  
+  .nav-menu-items {
+    width: 100%;
+  }
+  
+  .nav-menu-items li:hover {
+    background-color: #1a83ff;
+    width:100%;
+    opacity: 0.4;
+    transition: 300ms ease-out;
+    cursor: pointer;
+  }
+  
+  .navbar-toggle {
+    background-color: white;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    color: #060b26;
+  }
+  
+  
+  .nav-button{
+    background-color: #00627A;
+  }
