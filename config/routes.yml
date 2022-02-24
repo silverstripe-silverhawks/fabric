@@ -6,4 +6,4 @@ After:
 ---
 SilverStripe\Control\Director:
   rules:
-    'fabricator/api//$Action': SilverStripe\Fabricator\Controller
+    'fabricator/api//$Action': SilverStripe\Fabricator\Controller\FabricatorAPIController

@@ -3,7 +3,7 @@
 namespace SilverStripe\Fabricator\Extension;
 
 use SilverStripe\Dev\Debug;
-use SilverStripe\Fabricator\Service\APIService;
+use SilverStripe\Fabricator\Controller\Fabricator;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Versioned\Versioned;
@@ -13,7 +13,7 @@ use SilverStripe\View\SSViewer;
 class FabricatorExtension extends DataExtension
 {
     public function onAfterInit() {
-        $service = new APIService();
+        $fabricator = new Fabricator();
 
         $hasElemental = false;
         $elementalAreaId = -1;
@@ -22,10 +22,13 @@ class FabricatorExtension extends DataExtension
             $elementalAreaId = $this->owner->ElementalAreaID;
         }
 
-        // $allowedFields = $service->getPageInformation($this->owner->ClassName, $this->owner->ID, $elementalAreaId);
-        $allowedFields = $service->getAllowedFieldsOnPage($this->owner->ClassName);
+        $allowedFields = $fabricator->getPageInformation($this->owner->ClassName, $this->owner->ID);
 
-        $fieldSpec = DataObject::getSchema()->fieldSpecs($this->owner->ClassName);
+        Debug::dump($allowedFields);
+
+        if ($hasElemental) {
+            // $elementalBlocks = $fabricator->getElementalBlocks($elementalAreaId);
+        }
 
         // Debug::dump($hasElemental);
         $fabricatorReact = SSViewer::execute_template(
