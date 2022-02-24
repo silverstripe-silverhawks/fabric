@@ -25,6 +25,8 @@ class Fabricator extends React.Component {
     };
 
     this.addBlock = this.addBlock.bind(this);
+    this.highlightBlock = this.highlightBlock.bind(this);
+    this.removeHighlightBlock = this.removeHighlightBlock.bind(this);
     this.openBlock = this.openBlock.bind(this);
     this.closeBlock = this.closeBlock.bind(this);
   }
@@ -37,6 +39,18 @@ class Fabricator extends React.Component {
       editBlockId,
       editBlockInfo: blocks[0],
     });
+  }
+
+  highlightBlock(e) {
+    const editBlockId = e.target.id;
+    document.querySelector(`#e${editBlockId}`).classList.add('fabricator-highlight');
+  }
+
+  removeHighlightBlock(e) {
+    const alreadyHighlighting = document.querySelector('.fabricator-highlight')
+    if (alreadyHighlighting !== null) {
+      alreadyHighlighting.classList.remove('fabricator-highlight');
+    }
   }
 
   addBlock(e) {
@@ -53,6 +67,8 @@ class Fabricator extends React.Component {
       editBlockId: -1,
       editBlockInfo: [],
     });
+
+    this.removeHighlightBlock();
   }
 
   render() {
@@ -67,7 +83,7 @@ class Fabricator extends React.Component {
             const key = block.ID.value;
             return (
               <div className="menu__item" key={key}>
-                <a role="button" tabIndex={0} onClick={this.openBlock} id={key}>{blockTitle}</a>
+                <a role="button" tabIndex={0} onClick={this.openBlock} onMouseEnter={this.highlightBlock} onMouseLeave={this.removeHighlightBlock} id={key}>{blockTitle}</a>
               </div>
             );
           })}
@@ -97,9 +113,8 @@ class Fabricator extends React.Component {
         } else if (elementField.type === 'HTMLText') {
           return <textarea className="text-field" type="text" name={elementField.type} value={elementField.value} />;
         }
-
         return <input className="text-field" type="text" name={elementField.type} value={elementField.value} />
-      }
+      };
 
       return (
         <div className="fabricator-edit-block">
@@ -119,17 +134,10 @@ class Fabricator extends React.Component {
                     <div className="label">{ eleKey }</div>
                     { renderField(elementField) }
                   </div>
-                )
+                );
               })
             }
-            {/* <div className="fabricator-input">
-              <div className="label">Title</div>
-              <input type="text" className="text-field" />
-            </div>
-            <div className="fabricator-input">
-              <div className="label">Body</div>
-              <textarea className="textarea-field" />
-            </div> */}
+
             <div className="fabricator-edit-block-content-footer">
               <button className="fabricator-button fabricator-button--outline-green">Save</button>
             </div>

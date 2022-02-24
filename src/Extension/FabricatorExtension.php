@@ -41,7 +41,6 @@ class FabricatorExtension extends DataExtension
         if ($this->owner->ElementalAreaID) {
             $elementalAreaId = $this->owner->ElementalAreaID;
             $elementalBlocks = $fabricator->getElementalBlocks($elementalAreaId);
-            Debug::dump($elementalBlocks);
 
             $templateArgs['HasBlocks'] = true;
             $templateArgs['Blocks'] = json_encode($elementalBlocks);
