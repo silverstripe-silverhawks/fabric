@@ -88,6 +88,10 @@ var _Navbar = __webpack_require__("./client/src/components/Navbar.js");
 
 var _Navbar2 = _interopRequireDefault(_Navbar);
 
+var _settings = __webpack_require__("./client/src/icons/settings.svg");
+
+var _settings2 = _interopRequireDefault(_settings);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -105,31 +109,208 @@ var Fabricator = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (Fabricator.__proto__ || Object.getPrototypeOf(Fabricator)).call(this, props));
 
     var ROOT = document.querySelector('#fabricator-app');
-    var allowedFields = ROOT.getAttribute('allowed-fields');
-    var blocks = ROOT.getAttribute('blocks');
-
-    console.log(JSON.parse(JSON.stringify(blocks)));
-    console.log(JSON.parse(blocks));
+    var allowedFields = JSON.parse(ROOT.getAttribute('allowed-fields'));
+    var blocks = JSON.parse(ROOT.getAttribute('blocks'));
+    var settings = JSON.parse(ROOT.getAttribute('settings'));
 
     _this.state = {
       allowedFields: allowedFields,
-      blocks: blocks
+      blocks: blocks,
+      settings: settings,
+      hasBlocks: blocks.length > 0,
+
+      showEditBlock: false,
+      editBlockId: -1,
+      editBlockInfo: []
     };
 
-    console.log(_this.state);
+    _this.addBlock = _this.addBlock.bind(_this);
+    _this.openBlock = _this.openBlock.bind(_this);
+    _this.closeBlock = _this.closeBlock.bind(_this);
     return _this;
   }
 
   _createClass(Fabricator, [{
+    key: 'openBlock',
+    value: function openBlock(e) {
+      var editBlockId = e.target.id;
+      var blocks = this.state.blocks.filter(function (element) {
+        return element.ID.value === parseInt(e.target.id, 10);
+      });
+      this.setState({
+        showEditBlock: true,
+        editBlockId: editBlockId,
+        editBlockInfo: blocks[0]
+      });
+    }
+  }, {
+    key: 'addBlock',
+    value: function addBlock(e) {
+      this.setState({
+        showEditBlock: true,
+        editBlockId: -1
+      });
+    }
+  }, {
+    key: 'closeBlock',
+    value: function closeBlock(e) {
+      this.setState({
+        showEditBlock: false,
+        editBlockId: -1,
+        editBlockInfo: []
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var menuState = '';
+      var _this2 = this;
 
+      var websiteTitle = this.state.settings.Title.value;
+      var blocks = this.state.blocks;
+      var renderBlocksList = function renderBlocksList() {
+        return _react2.default.createElement(
+          'div',
+          { className: 'fabricator-nav-menu-items' },
+          _react2.default.createElement(
+            'div',
+            { className: 'title' },
+            'Page content'
+          ),
+          blocks.map(function (block) {
+            var blockTitle = block.Title.value;
+            var key = block.ID.value;
+            return _react2.default.createElement(
+              'div',
+              { className: 'menu__item', key: key },
+              _react2.default.createElement(
+                'a',
+                { role: 'button', tabIndex: 0, onClick: _this2.openBlock, id: key },
+                blockTitle
+              )
+            );
+          }),
+          _react2.default.createElement(
+            'div',
+            { className: 'block-options' },
+            _react2.default.createElement(
+              'button',
+              { className: 'fabricator-button fabricator-button--blue', onClick: _this2.addBlock },
+              'Add a block'
+            )
+          )
+        );
+      };
+
+      var renderEditBlock = function renderEditBlock() {
+        var info = _this2.state.editBlockInfo;
+
+        var getTitle = function getTitle() {
+          if (_this2.state.editBlockId === -1) {
+            return 'Add a block';
+          }
+          return _this2.state.editBlockInfo.Title.value;
+        };
+
+        var renderField = function renderField(elementField) {
+          if (elementField.type === 'Boolean') {
+            return _react2.default.createElement('input', { type: 'checkbox', id: elementField.type, name: elementField.type, defaultChecked: parseInt(elementField.value, 10) });
+          } else if (elementField.type === 'HTMLText') {
+            return _react2.default.createElement('textarea', { className: 'text-field', type: 'text', name: elementField.type, value: elementField.value });
+          }
+
+          return _react2.default.createElement('input', { className: 'text-field', type: 'text', name: elementField.type, value: elementField.value });
+        };
+
+        return _react2.default.createElement(
+          'div',
+          { className: 'fabricator-edit-block' },
+          _react2.default.createElement(
+            'div',
+            { className: 'fabricator-edit-block__header' },
+            _react2.default.createElement(
+              'div',
+              { className: 'options' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                'Edit'
+              ),
+              _react2.default.createElement(
+                'button',
+                { className: 'fabricator-button fabricator-button--right', onClick: _this2.closeBlock },
+                'Cancel'
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'title' },
+              getTitle()
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'fabricator-input__block' },
+            Object.keys(_this2.state.editBlockInfo).map(function (eleKey, index) {
+              var elementField = _this2.state.editBlockInfo[eleKey];
+              return _react2.default.createElement(
+                'div',
+                { key: index, className: 'fabricator-input' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'label' },
+                  eleKey
+                ),
+                renderField(elementField)
+              );
+            }),
+            _react2.default.createElement(
+              'div',
+              { className: 'fabricator-edit-block-content-footer' },
+              _react2.default.createElement(
+                'button',
+                { className: 'fabricator-button fabricator-button--outline-green' },
+                'Save'
+              )
+            )
+          )
+        );
+      };
 
       return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(_Navbar2.default, null)
+        _react2.default.createElement(
+          'div',
+          { className: 'fabricator-sidebar' },
+          _react2.default.createElement(
+            'nav',
+            { className: 'fabricator-nav-menu' },
+            _react2.default.createElement(
+              'div',
+              { className: 'fabricator-menu-title' },
+              _react2.default.createElement(
+                'h3',
+                null,
+                websiteTitle
+              ),
+              _react2.default.createElement(
+                'h5',
+                null,
+                'View site tree'
+              )
+            ),
+            this.state.showEditBlock ? renderEditBlock() : renderBlocksList(),
+            _react2.default.createElement(
+              'div',
+              { className: 'fabricator-page-settings' },
+              _react2.default.createElement(
+                'button',
+                { className: 'fabricator-button fabricator-button--default' },
+                'Page settings'
+              )
+            )
+          )
+        )
       );
     }
   }]);
@@ -291,6 +472,13 @@ exports.default = TopNavFabricator;
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "images/logstate.svg";
+
+/***/ }),
+
+/***/ "./client/src/icons/settings.svg":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "images/settings.svg";
 
 /***/ }),
 

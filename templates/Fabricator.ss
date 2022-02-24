@@ -1,4 +1,3 @@
-<div>Fabricator</div>
 <div id="fabricator-app"
     page-fields="$PageFields"
     blocks="$Blocks"

@@ -29,19 +29,19 @@ class FabricatorExtension extends DataExtension
             'Global' => [],
             'PageFields' => [],
             'Blocks' => [],
-            // 'Settings' => [],
+            'Settings' => [],
         ];
 
         $pageInfo = $fabricator->getPageInformation($this->owner->ClassName, $this->owner->ID);
 
-        Debug::dump($this->owner->toMap());
+        $templateArgs['PageFields'] = json_encode($pageInfo['PageFields']);
+        $templateArgs['Settings'] = json_encode($pageInfo['SiteConfig']);
 
-        $templateArgs['PageFields'] = json_encode($pageInfo['PageFields'], JSON_FORCE_OBJECT);
-        // $templateArgs['Global'] = json_encode($pageInfo['SiteConfig'], JSON_FORCE_OBJECT);
 
         if ($this->owner->ElementalAreaID) {
             $elementalAreaId = $this->owner->ElementalAreaID;
             $elementalBlocks = $fabricator->getElementalBlocks($elementalAreaId);
+            Debug::dump($elementalBlocks);
 
             $templateArgs['HasBlocks'] = true;
             $templateArgs['Blocks'] = json_encode($elementalBlocks);
@@ -55,8 +55,9 @@ class FabricatorExtension extends DataExtension
 
         Requirements::javascript('silverstripe/fabricator: client/dist/js/bundle.js');
         Requirements::css('silverstripe/fabricator: client/dist/styles/bundle.css');
-        Requirements::customScript(
-            "document.body.innerHTML += `{$fabricatorReact}`;"
-        );
+
+        Requirements::customScript(<<<JS
+            document.body.insertAdjacentHTML("afterbegin", `{$fabricatorReact}`);
+        JS);
     }
 }

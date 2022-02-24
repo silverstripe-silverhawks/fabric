@@ -12,11 +12,17 @@ use SilverStripe\SiteConfig\SiteConfig;
 class Fabricator extends Controller
 {
     protected array $disabled_fields = [
+        'ClassName',
         'CanViewType',
         'CanEditType',
         'HasBrokenLink',
         'HasBrokenFile',
-        'RecordClassName'
+        'RecordClassName',
+        'Created',
+        'LastEdited',
+        'ParentID',
+        'Sort',
+        'Version',
     ];
 
     protected array $allowed_site_config = [
@@ -40,8 +46,8 @@ class Fabricator extends Controller
         foreach ($objects as $key => $value) {
             if (!in_array($key, $this->disabled_fields)) {
                 $allowedFields[$key] = [
-                    'Type' => $objectSchema[$key],
-                    'Value' => $value
+                    'type' => $objectSchema[$key],
+                    'value' => $value
                 ];
             }
         }
@@ -70,8 +76,8 @@ class Fabricator extends Controller
         foreach ($siteConfig as $key => $value) {
             if (in_array($key, $this->allowed_site_config)) {
                 $allowedSiteConfig[$key] = [
-                    'Type' => $objectSchema[$key],
-                    'Value' => $value
+                    'type' => $objectSchema[$key],
+                    'value' => $value
                 ];
             }
         }
