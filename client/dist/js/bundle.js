@@ -157,31 +157,31 @@ Object.defineProperty(exports, "__esModule", {
 });
 var DummyData = exports.DummyData = [{
   title: 'Global Features',
-  cName: 'nav-title'
+  cName: 'fabricator-nav-title'
 }, {
   title: 'Header',
-  cName: 'nav-text'
+  cName: 'fabricator-nav-text'
 }, {
   title: 'Page Hero',
-  cName: 'nav-text'
+  cName: 'fabricator-nav-text'
 }, {
   title: 'Page Utilities',
-  cName: 'nav-text'
+  cName: 'fabricator-nav-text'
 }, {
   title: 'Footer',
-  cName: 'nav-text'
+  cName: 'fabricator-nav-text'
 }, {
   title: 'Page Content',
-  cName: 'nav-title'
+  cName: 'fabricator-nav-title'
 }, {
   title: 'Feature tile Block',
-  cName: 'nav-text'
+  cName: 'fabricator-nav-text'
 }, {
   title: 'Step Block',
-  cName: 'nav-text'
+  cName: 'fabricator-nav-text'
 }, {
   title: 'Video Block',
-  cName: 'nav-text'
+  cName: 'fabricator-nav-text'
 }];
 
 /***/ }),
@@ -196,52 +196,47 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _react = __webpack_require__("./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
 var _DummyData = __webpack_require__("./client/src/components/DummyData.js");
 
+var _TopNavFabricator = __webpack_require__("./client/src/components/TopNavFabricator.js");
+
+var _TopNavFabricator2 = _interopRequireDefault(_TopNavFabricator);
+
+var _logstate = __webpack_require__("./client/src/icons/logstate.svg");
+
+var _logstate2 = _interopRequireDefault(_logstate);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Navbar = function Navbar() {
-  var _useState = (0, _react.useState)(false),
-      _useState2 = _slicedToArray(_useState, 2),
-      sidebar = _useState2[0],
-      setSidebar = _useState2[1];
 
-  var showSidebar = function showSidebar() {
-    setSidebar(!sidebar);
-  };
   return _react2.default.createElement(
     'div',
-    null,
-    _react2.default.createElement(
-      'div',
-      { className: 'navbar' },
-      _react2.default.createElement(
-        'div',
-        { className: 'menu-bars' },
-        _react2.default.createElement('button', { onClick: showSidebar })
-      )
-    ),
+    { className: 'fabricator-sidebar' },
     _react2.default.createElement(
       'nav',
-      { className: sidebar ? 'nav-menu active' : 'nav-menu' },
+      { className: 'fabricator-nav-menu' },
+      _react2.default.createElement(
+        'div',
+        { className: 'fabricator-menu-title' },
+        _react2.default.createElement(
+          'h3',
+          null,
+          'Login to MyNZQA'
+        ),
+        _react2.default.createElement(
+          'h5',
+          null,
+          'View site tree'
+        )
+      ),
       _react2.default.createElement(
         'ul',
-        { className: 'nav-menu-items', onClick: showSidebar },
-        _react2.default.createElement(
-          'li',
-          { className: 'navbar-toggle' },
-          _react2.default.createElement(
-            'p',
-            null,
-            'x'
-          )
-        ),
+        { className: 'fabricator-nav-menu-items' },
         _DummyData.DummyData.map(function (item, index) {
           return _react2.default.createElement(
             'li',
@@ -255,7 +250,7 @@ var Navbar = function Navbar() {
         }),
         _react2.default.createElement(
           'button',
-          { className: '' },
+          { className: 'fabricator-button' },
           'Add a block'
         )
       )
@@ -264,6 +259,41 @@ var Navbar = function Navbar() {
 };
 
 exports.default = Navbar;
+
+/***/ }),
+
+/***/ "./client/src/components/TopNavFabricator.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__("./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var TopNavFabricator = function TopNavFabricator() {
+  return _react2.default.createElement(
+    'div',
+    null,
+    'TopNavFabricator'
+  );
+};
+
+exports.default = TopNavFabricator;
+
+/***/ }),
+
+/***/ "./client/src/icons/logstate.svg":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "images/logstate.svg";
 
 /***/ }),
 

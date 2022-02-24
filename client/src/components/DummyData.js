@@ -3,36 +3,36 @@
 export const DummyData = [
   {
     title: 'Global Features',
-    cName: 'nav-title'
+    cName: 'fabricator-nav-title'
   },
   {
     title: 'Header',
-    cName: 'nav-text'
+    cName: 'fabricator-nav-text'
   },
   {
     title: 'Page Hero',
-    cName: 'nav-text'
+    cName: 'fabricator-nav-text'
   },
   {
     title: 'Page Utilities',
-    cName: 'nav-text'
+    cName: 'fabricator-nav-text'
   },
   {
     title: 'Footer',
-    cName: 'nav-text'
+    cName: 'fabricator-nav-text'
   },
   {
     title: 'Page Content',
-    cName: 'nav-title'
+    cName: 'fabricator-nav-title'
   },
   {
     title: 'Feature tile Block',
-    cName: 'nav-text'
+    cName: 'fabricator-nav-text'
   },{
     title: 'Step Block',
-    cName: 'nav-text'
+    cName: 'fabricator-nav-text'
   },{
     title: 'Video Block',
-    cName: 'nav-text'
+    cName: 'fabricator-nav-text'
   },
 ];

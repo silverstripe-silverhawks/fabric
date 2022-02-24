@@ -1,25 +1,20 @@
-import React, {useState} from 'react'
+import React from 'react'
 import { DummyData } from './DummyData';
+import TopNavFabricator from './TopNavFabricator';
+import loggedin from '../icons/logstate.svg'
 // import '../bundles/bundle.scss';
 
 const Navbar = () => {
-    const [sidebar, setSidebar] = useState(false);
 
-    const showSidebar = () => {
-      setSidebar(!sidebar);
-    }
   return (
- <div>
-    <div className="navbar">
-        <div className= "menu-bars">
-        <button onClick={showSidebar}/>
-        </div>
-    </div>
-    <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
-    <ul className='nav-menu-items' onClick={showSidebar}>
-      <li className='navbar-toggle'>
-          <p>x</p>
-      </li>
+ <div className='fabricator-sidebar'>
+    <nav className="fabricator-nav-menu">
+      <div className="fabricator-menu-title">
+      <h3>Login to MyNZQA</h3>
+      <h5>View site tree</h5>
+      </div>
+    <ul className='fabricator-nav-menu-items'>
+
       {/* this will map through the api to get each block. Dummy data for now. */}
       {DummyData.map((item, index) => {
         return (
@@ -28,7 +23,7 @@ const Navbar = () => {
           </li>
         );
       })}
-      <button className= "">Add a block</button>
+      <button className= "fabricator-button">Add a block</button>
     </ul>
   </nav>
 
