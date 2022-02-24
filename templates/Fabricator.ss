@@ -1,5 +1,6 @@
 <div>Fabricator</div>
 <div id="fabricator-app"
-    has-blocks="$HasBlocks"
-    allowed-fields="$AllowedFields"
+    page-fields="$PageFields"
+    blocks="$Blocks"
+    settings="$Settings"
 ></div>

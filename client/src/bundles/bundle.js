@@ -10,29 +10,31 @@ class Fabricator extends React.Component {
     // unsure if this is the right way??
     const ROOT = document.querySelector('#fabricator-app');
     const allowedFields = ROOT.getAttribute('allowed-fields');
-    const hasBlocks = ROOT.getAttribute('has-blocks');
+    const blocks = ROOT.getAttribute('blocks');
+
+    console.log(JSON.parse(JSON.stringify(blocks)));
+    console.log(JSON.parse(blocks));
 
 
     this.state = {
       allowedFields,
-      hasBlocks
+      blocks
     };
 
     console.log(this.state);
   }
 
   render() {
-    const hasBlocks = this.state.hasBlocks;
+    // const hasBlocks = this.state.hasBlocks;
     let menuState = '';
-    if (hasBlocks) {
-      menuState = 'Elemental';
-    } else {
-      menuState = 'PagesOnly';
-    }
+    // if (hasBlocks) {
+    //   menuState = 'Elemental';
+    // } else {
+    //   menuState = 'PagesOnly';
+    // }
 
     return (
       <div>
-        {menuState}
         <Navbar />
       </div>
     );

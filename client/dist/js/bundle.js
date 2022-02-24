@@ -106,11 +106,14 @@ var Fabricator = function (_React$Component) {
 
     var ROOT = document.querySelector('#fabricator-app');
     var allowedFields = ROOT.getAttribute('allowed-fields');
-    var hasBlocks = ROOT.getAttribute('has-blocks');
+    var blocks = ROOT.getAttribute('blocks');
+
+    console.log(JSON.parse(JSON.stringify(blocks)));
+    console.log(JSON.parse(blocks));
 
     _this.state = {
       allowedFields: allowedFields,
-      hasBlocks: hasBlocks
+      blocks: blocks
     };
 
     console.log(_this.state);
@@ -120,18 +123,12 @@ var Fabricator = function (_React$Component) {
   _createClass(Fabricator, [{
     key: 'render',
     value: function render() {
-      var hasBlocks = this.state.hasBlocks;
       var menuState = '';
-      if (hasBlocks) {
-        menuState = 'Elemental';
-      } else {
-        menuState = 'PagesOnly';
-      }
+
 
       return _react2.default.createElement(
         'div',
         null,
-        menuState,
         _react2.default.createElement(_Navbar2.default, null)
       );
     }

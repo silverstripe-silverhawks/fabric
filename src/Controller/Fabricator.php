@@ -2,6 +2,7 @@
 
 namespace SilverStripe\Fabricator\Controller;
 
+use DNADesign\Elemental\Models\ElementalArea;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\Debug;
@@ -24,7 +25,7 @@ class Fabricator extends Controller
     ];
 
     public function getPageInformation(string $className, int $pageId) {
-        $fields = $this->getAllowedFieldsOnPage($className);
+        $fields = $this->getFieldsOnPage($className);
         $siteConfig = $this->getAllowedSiteConfigData();
 
         return [
@@ -33,18 +34,10 @@ class Fabricator extends Controller
         ];
     }
 
-    /**
-     * Returns only the allowed fields on a page with its type
-     */
-    public function getAllowedFieldsOnPage(string $className)
-    {
+    private function getAllowedFieldsByObject($objects, string $className) {
         $allowedFields = [];
-        // $configDisallowedFields = Config::inst()->get(FabricatorAPIController::class, 'disallowed_fields');
-
-        $pageObjects = DataObject::get($className)->first()->toMap();
         $objectSchema = DataObject::getSchema()->fieldSpecs($className);
-
-        foreach ($pageObjects as $key => $value) {
+        foreach ($objects as $key => $value) {
             if (!in_array($key, $this->disabled_fields)) {
                 $allowedFields[$key] = [
                     'Type' => $objectSchema[$key],
@@ -53,6 +46,19 @@ class Fabricator extends Controller
             }
         }
 
+        return $allowedFields;
+    }
+
+    /**
+     * Returns only the allowed fields on a page with its type
+     */
+    public function getFieldsOnPage(string $className)
+    {
+        $allowedFields = [];
+        // $configDisallowedFields = Config::inst()->get(FabricatorAPIController::class, 'disallowed_fields');
+
+        $pageObjects = DataObject::get($className)->first()->toMap();
+        $allowedFields = $this->getAllowedFieldsByObject($pageObjects, $className);
         return $allowedFields;
     }
 
@@ -71,6 +77,20 @@ class Fabricator extends Controller
         }
 
         return $allowedSiteConfig;
+    }
+
+    public function getElementalBlocks(int $elementalAreaId) {
+        $elementalBlocks = [];
+        $area = ElementalArea::get()
+            ->filter('ID', $elementalAreaId)
+            ->first()
+            ->Elements()
+            ->each(function ($element) use (&$elementalBlocks) {
+                $allowedFields = $this->getAllowedFieldsByObject($element->toMap(), $element->ClassName);
+                $elementalBlocks[] = $allowedFields;
+            });
+
+        return $elementalBlocks;
     }
 
     public function getObjectById(HTTPRequest $request)
