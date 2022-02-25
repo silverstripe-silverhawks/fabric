@@ -3,11 +3,13 @@
 namespace SilverStripe\Fabricator\Controller;
 
 use DNADesign\Elemental\Models\ElementalArea;
+use DNADesign\Elemental\Services\ElementTypeRegistry;
 use SilverStripe\Control\Controller;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\Debug;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\View\ArrayData;
 
 class Fabricator extends Controller
 {
@@ -93,10 +95,34 @@ class Fabricator extends Controller
             ->Elements()
             ->each(function ($element) use (&$elementalBlocks) {
                 $allowedFields = $this->getAllowedFieldsByObject($element->toMap(), $element->ClassName);
+                // add the type
+                $allowedFields['Type'] = [
+                    'type' => 'string',
+                    'value' => $element->getType()
+                ];
                 $elementalBlocks[] = $allowedFields;
             });
 
         return $elementalBlocks;
+    }
+
+    public function getElementalBlockTypes() {
+        $definitions = ElementTypeRegistry::generate()->getDefinitions();
+
+        $blockTypes = ArrayList::create();
+
+        foreach ($definitions as $key => $value) {
+            $blockTypes->add(ArrayData::create([
+                'Title' => $value['title'],
+                'Icon' => $value['icon'],
+            ]));
+        }
+
+        return $blockTypes->toNestedArray();
+    }
+
+    public function saveBlock($data) {
+        Debug::dump($data);
     }
 
     public function getObjectById(HTTPRequest $request)

@@ -74,6 +74,8 @@
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__("./node_modules/react/index.js");
@@ -94,6 +96,8 @@ var _settings2 = _interopRequireDefault(_settings);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -112,21 +116,29 @@ var Fabricator = function (_React$Component) {
     var allowedFields = JSON.parse(ROOT.getAttribute('allowed-fields'));
     var blocks = JSON.parse(ROOT.getAttribute('blocks'));
     var settings = JSON.parse(ROOT.getAttribute('settings'));
+    var blockTypes = JSON.parse(ROOT.getAttribute('block-types'));
 
     _this.state = {
       allowedFields: allowedFields,
       blocks: blocks,
+      blockTypes: blockTypes,
       settings: settings,
       hasBlocks: blocks.length > 0,
 
       showEditBlock: false,
       editBlockId: -1,
-      editBlockInfo: []
+      editBlockInfo: [],
+      addBlockInfo: []
     };
 
     _this.addBlock = _this.addBlock.bind(_this);
+    _this.highlightGlobal = _this.highlightGlobal.bind(_this);
+    _this.highlightBlock = _this.highlightBlock.bind(_this);
+    _this.removeHighlightBlock = _this.removeHighlightBlock.bind(_this);
     _this.openBlock = _this.openBlock.bind(_this);
     _this.closeBlock = _this.closeBlock.bind(_this);
+    _this.saveBlock = _this.saveBlock.bind(_this);
+    _this.updateValue = _this.updateValue.bind(_this);
     return _this;
   }
 
@@ -134,6 +146,7 @@ var Fabricator = function (_React$Component) {
     key: 'openBlock',
     value: function openBlock(e) {
       var editBlockId = e.target.id;
+
       var blocks = this.state.blocks.filter(function (element) {
         return element.ID.value === parseInt(e.target.id, 10);
       });
@@ -142,6 +155,25 @@ var Fabricator = function (_React$Component) {
         editBlockId: editBlockId,
         editBlockInfo: blocks[0]
       });
+    }
+  }, {
+    key: 'highlightGlobal',
+    value: function highlightGlobal(e, element) {
+      document.querySelector('.' + element).classList.add('fabricator-highlight');
+    }
+  }, {
+    key: 'highlightBlock',
+    value: function highlightBlock(e) {
+      var editBlockId = e.target.id;
+      document.querySelector('#e' + editBlockId).classList.add('fabricator-highlight');
+    }
+  }, {
+    key: 'removeHighlightBlock',
+    value: function removeHighlightBlock(e) {
+      var alreadyHighlighting = document.querySelector('.fabricator-highlight');
+      if (alreadyHighlighting !== null) {
+        alreadyHighlighting.classList.remove('fabricator-highlight');
+      }
     }
   }, {
     key: 'addBlock',
@@ -159,6 +191,40 @@ var Fabricator = function (_React$Component) {
         editBlockId: -1,
         editBlockInfo: []
       });
+
+      this.removeHighlightBlock();
+    }
+  }, {
+    key: 'updateValue',
+    value: function updateValue(e, key) {
+      var value = e.target.value;
+      this.setState(function (prevState) {
+        return {
+          editBlockInfo: _extends({}, prevState.editBlockInfo, _defineProperty({}, key, _extends({}, prevState.editBlockInfo[key], {
+            value: value
+          })))
+        };
+      });
+
+      var id = this.state.editBlockId;
+      var type = this.state.editBlockInfo[key].type.toLowerCase();
+      var element = document.querySelector('#e' + id);
+
+      if (type === 'htmltext') type = 'content';
+      element.querySelector('[class*="__' + type + '"]').innerHTML = value;
+    }
+  }, {
+    key: 'saveBlock',
+    value: function saveBlock() {
+      console.log(this.state.editBlockInfo);
+      fetch('/fabricator/api/saveBlock', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify(this.state.editBlockInfo)
+      });
     }
   }, {
     key: 'render',
@@ -170,38 +236,94 @@ var Fabricator = function (_React$Component) {
       var renderBlocksList = function renderBlocksList() {
         return _react2.default.createElement(
           'div',
-          { className: 'fabricator-nav-menu-items' },
+          { className: 'fabricator-nav-menu__container' },
           _react2.default.createElement(
             'div',
-            { className: 'title' },
-            'Page content'
-          ),
-          blocks.map(function (block) {
-            var blockTitle = block.Title.value;
-            var key = block.ID.value;
-            return _react2.default.createElement(
+            { className: 'fabricator-nav-menu-items' },
+            _react2.default.createElement(
               'div',
-              { className: 'menu__item', key: key },
+              { className: 'title' },
+              'Global features'
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'menu__item' },
               _react2.default.createElement(
                 'a',
-                { role: 'button', tabIndex: 0, onClick: _this2.openBlock, id: key },
-                blockTitle
+                {
+                  role: 'button',
+                  tabIndex: 0,
+                  onMouseEnter: function onMouseEnter(e) {
+                    return _this2.highlightGlobal(e, 'header');
+                  },
+                  onMouseLeave: _this2.removeHighlightBlock
+                },
+                'Header'
               )
-            );
-          }),
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'menu__item' },
+              _react2.default.createElement(
+                'a',
+                {
+                  role: 'button',
+                  tabIndex: 0,
+                  onMouseEnter: function onMouseEnter(e) {
+                    return _this2.highlightGlobal(e, 'footer');
+                  },
+                  onMouseLeave: _this2.removeHighlightBlock
+                },
+                'Footer'
+              )
+            )
+          ),
           _react2.default.createElement(
             'div',
-            { className: 'block-options' },
+            { className: 'fabricator-nav-menu-items' },
             _react2.default.createElement(
-              'button',
-              { className: 'fabricator-button fabricator-button--blue', onClick: _this2.addBlock },
-              'Add a block'
+              'div',
+              { className: 'title' },
+              'Page content'
+            ),
+            blocks.map(function (block) {
+              var blockTitle = block.Title.value;
+              var blockType = block.Type.value;
+              var key = block.ID.value;
+              return _react2.default.createElement(
+                'div',
+                { className: 'menu__item', key: key },
+                _react2.default.createElement(
+                  'a',
+                  { role: 'button', tabIndex: 0, onClick: _this2.openBlock, onMouseEnter: _this2.highlightBlock, onMouseLeave: _this2.removeHighlightBlock, id: key },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'menu__item__type' },
+                    blockType
+                  ),
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'menu__item__title' },
+                    blockTitle
+                  )
+                )
+              );
+            }),
+            _react2.default.createElement(
+              'div',
+              { className: 'block-options' },
+              _react2.default.createElement(
+                'button',
+                { className: 'fabricator-button fabricator-button--blue', onClick: _this2.addBlock },
+                'Add a block'
+              )
             )
           )
         );
       };
 
       var renderEditBlock = function renderEditBlock() {
+        var newBlock = _this2.state.editBlockId === -1;
         var info = _this2.state.editBlockInfo;
 
         var getTitle = function getTitle() {
@@ -211,14 +333,80 @@ var Fabricator = function (_React$Component) {
           return _this2.state.editBlockInfo.Title.value;
         };
 
-        var renderField = function renderField(elementField) {
+        var renderInput = function renderInput(elementField, key) {
           if (elementField.type === 'Boolean') {
             return _react2.default.createElement('input', { type: 'checkbox', id: elementField.type, name: elementField.type, defaultChecked: parseInt(elementField.value, 10) });
           } else if (elementField.type === 'HTMLText') {
-            return _react2.default.createElement('textarea', { className: 'text-field', type: 'text', name: elementField.type, value: elementField.value });
+            return _react2.default.createElement('textarea', {
+              className: 'text-field',
+              rows: '10',
+              type: 'text',
+              name: elementField.type,
+              value: elementField.value,
+              onChange: function onChange(e) {
+                return _this2.updateValue(e, key);
+              }
+            });
           }
+          return _react2.default.createElement('input', {
+            className: 'text-field',
+            type: 'text',
+            name: elementField.type,
+            value: elementField.value,
+            onChange: function onChange(e) {
+              return _this2.updateValue(e, key);
+            }
+          });
+        };
 
-          return _react2.default.createElement('input', { className: 'text-field', type: 'text', name: elementField.type, value: elementField.value });
+        var renderNewBlock = function renderNewBlock() {
+          var blockTypes = _this2.state.blockTypes;
+
+          return _react2.default.createElement(
+            'div',
+            { className: 'fabricator-input' },
+            _react2.default.createElement(
+              'label',
+              { htmlFor: 'Title' },
+              'Title'
+            ),
+            _react2.default.createElement(
+              'select',
+              { className: 'select-field', value: 'Content' },
+              blockTypes.map(function (ele) {
+                return _react2.default.createElement(
+                  'option',
+                  { key: ele.Title, value: ele.Title },
+                  ele.Title
+                );
+              })
+            )
+          );
+        };
+
+        var renderEditBlockFields = function renderEditBlockFields() {
+          return Object.keys(_this2.state.editBlockInfo).map(function (eleKey, index) {
+            if (eleKey !== 'ID' && eleKey !== 'Type') {
+              var elementField = _this2.state.editBlockInfo[eleKey];
+              return _react2.default.createElement(
+                'div',
+                { key: index, className: 'fabricator-input' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'label' },
+                  eleKey
+                ),
+                renderInput(elementField, eleKey)
+              );
+            }
+          });
+        };
+
+        var renderFields = function renderFields() {
+          if (newBlock) {
+            return renderNewBlock();
+          }
+          return renderEditBlockFields();
         };
 
         return _react2.default.createElement(
@@ -250,25 +438,13 @@ var Fabricator = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'fabricator-input__block' },
-            Object.keys(_this2.state.editBlockInfo).map(function (eleKey, index) {
-              var elementField = _this2.state.editBlockInfo[eleKey];
-              return _react2.default.createElement(
-                'div',
-                { key: index, className: 'fabricator-input' },
-                _react2.default.createElement(
-                  'div',
-                  { className: 'label' },
-                  eleKey
-                ),
-                renderField(elementField)
-              );
-            }),
+            renderFields(),
             _react2.default.createElement(
               'div',
               { className: 'fabricator-edit-block-content-footer' },
               _react2.default.createElement(
                 'button',
-                { className: 'fabricator-button fabricator-button--outline-green' },
+                { className: 'fabricator-button fabricator-button--outline-green', onClick: _this2.saveBlock },
                 'Save'
               )
             )

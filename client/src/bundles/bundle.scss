@@ -29,8 +29,7 @@ $color-blue-dark: #00627A;
 $color-green: #007A22;
 
 .fabricator-highlight {
-  background: #45ADE833;
-  // border: 1px solid darken($color-blue-light, 10%);
+  background: #45ADE833 !important;
 }
 
 .fabricator-nav-menu {
@@ -117,6 +116,16 @@ $color-green: #007A22;
     a {
       display: block;
       padding: 12px 30px;
+
+      .menu__item__type {
+        font-weight: 700;
+        pointer-events: none;
+      }
+
+      .menu__item__title {
+        display: inline-block;
+        pointer-events: none;
+      }
     }
   }
 }
@@ -201,7 +210,9 @@ $color-green: #007A22;
   }
 
   .text-field,
-  .textarea-field {
+  .textarea-field,
+  .select-field {
+    background: $color-white;
     border:1px solid $color-grey-light;
     width: 100%;
     font-size: 14px;

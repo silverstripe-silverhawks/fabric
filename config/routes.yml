@@ -1,9 +1,1 @@
----
-Name: approutes
-After:
-  - '#rootroutes'
-  - '#coreroutes'
----
-SilverStripe\Control\Director:
-  rules:
-    'fabricator/api//$Action': SilverStripe\Fabricator\Controller\FabricatorAPIController
+
