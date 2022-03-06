@@ -50,9 +50,9 @@ class FabricatorAPIController extends Controller {
     }
 
     public function saveBlock(HTTPRequest $request) {
-        $data = $request->postVars();
+        $data = json_decode($request->getBody(), true);
         $block = $this->fabricator->saveBlock($data);
-        return json_encode($block);
+        return $data;
     }
 
     public function getObjectById(HTTPRequest $request)

@@ -2,9 +2,12 @@
 
 namespace SilverStripe\Fabricator\Controller;
 
+use DNADesign\Elemental\Models\BaseElement;
 use DNADesign\Elemental\Models\ElementalArea;
 use DNADesign\Elemental\Services\ElementTypeRegistry;
+use Dynamic\Elements\Features\Elements\ElementFeatures;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Dev\Debug;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
@@ -94,12 +97,14 @@ class Fabricator extends Controller
             ->first()
             ->Elements()
             ->each(function ($element) use (&$elementalBlocks) {
+
                 $allowedFields = $this->getAllowedFieldsByObject($element->toMap(), $element->ClassName);
                 // add the type
                 $allowedFields['Type'] = [
                     'type' => 'string',
-                    'value' => $element->getType()
+                    'value' => $element->getType(),
                 ];
+
                 $elementalBlocks[] = $allowedFields;
             });
 
@@ -121,12 +126,24 @@ class Fabricator extends Controller
         return $blockTypes->toNestedArray();
     }
 
-    public function saveBlock($data) {
-        Debug::dump($data);
+    public function getHasManyDetailsFromObject() {
+        // if ($element->hasMany()) {
+        //     foreach ($element->hasMany() as $relationship => $class) {
+        //         $components = $element->getComponents($relationship);
+        //         foreach ($components as $component) {
+        //             $componentFields = $this->getAllowedFieldsByObject($component->toMap(), $component->ClassName);
+        //             $allowedFields['HasMany'][$relationship][] = $componentFields;
+        //         }
+        //     }
+        // }
     }
 
-    public function getObjectById(HTTPRequest $request)
-    {
+    public function saveBlock($data) {
+        $id = 3;
+        $className = BaseElement::get()->filter('ID', $id)->first()->getField('ClassName');
+        $instance = singleton($className);
+
+        $dataValues = $instance::get()->filter('ID', $id)->first();
 
     }
 }
