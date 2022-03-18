@@ -23,18 +23,20 @@ class FabricatorExtension extends DataExtension
         $elementalAreaId = -1;
 
         $templateArgs = [
-            'Fabricator' => 'Fabricator',
+            'ID' => $this->owner->ID,
             'Stage' => Versioned::get_stage(),
             'HasBlocks' => false,
             'Global' => [],
             'PageFields' => [],
             'Blocks' => [],
             'Settings' => [],
+            'Username' => Security::getCurrentUser()->getName()
         ];
 
         $pageInfo = $fabricator->getPageInformation($this->owner->ClassName, $this->owner->ID);
 
         $templateArgs['PageFields'] = json_encode($pageInfo['PageFields']);
+
         $templateArgs['Settings'] = json_encode($pageInfo['SiteConfig']);
 
 

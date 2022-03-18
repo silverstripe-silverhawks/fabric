@@ -1,0 +1,357 @@
+@import "./variables";
+@import "./mixins";
+
+#app {
+  width: calc(100% - 360px - 16px);
+  left: $sidebar-width + 16px;
+  position: relative;
+}
+
+$color-white: #fff;
+$color-black: #000;
+$color-grey-100: #d1d1d1;
+$color-grey-200: #cacaca;
+$color-grey-500: #656565;
+$color-grey-600: #060b26;
+$color-blue-light: #45ade8;
+$color-blue-dark: #00627a;
+$color-green: #007a22;
+
+.fabricator {
+  font-family: "Roboto", sans-serif;
+  position: relative;
+  z-index: 5000;
+
+  background-color: $color-white;
+  color: $color-grey-600;
+  width: $sidebar-width;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  .fabricator-header {
+    padding: 30px;
+    border-bottom: 1px solid #d1d1d1;
+
+    .header__actions {
+      display: flex;
+      margin-bottom: 30px;
+
+      .username {
+        align-items: center;
+        display: flex;
+        margin-right: auto;
+
+        &:before {
+          content: "";
+          margin-right: 5px;
+          @include icon("profile", 14px, 14px);
+        }
+      }
+
+      .links {
+        display: flex;
+
+        .divider {
+          margin: 0 10px;
+          color: $color-grey-200;
+        }
+      }
+    }
+
+    .header__content {
+      h3 {
+        font-size: 24px;
+        margin: 0;
+        margin-bottom: 12px;
+      }
+
+      h5 {
+        font-size: 14px;
+        margin: 0;
+      }
+    }
+
+    .header__controls {
+      .options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .title {
+          font-size: 14px;
+          color: #333333;
+          text-transform: uppercase;
+        }
+      }
+
+      .title {
+        font-size: 24px;
+        color: $color-grey-600;
+      }
+    }
+  }
+
+  &-overlay {
+    position: absolute;
+    width: 0;
+    height: 0;
+    background: $color-black;
+    opacity: 0;
+    z-index: 4999;
+    transition: opacity 0.3s ease-in-out;
+
+    &.shown {
+      transition: opacity 0.3s ease-in-out;
+      width: 100%;
+      height: 100vh;
+      opacity: 0.5;
+    }
+  }
+
+  &-highlight {
+    position: relative;
+    z-index: 5000;
+
+    &:after {
+      content: "";
+      position: absolute;
+      display: block;
+      background: #45ade8;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.25;
+    }
+  }
+  &-open {
+    position: relative;
+    z-index: 5000;
+  }
+
+  &-focus-mode {
+    position: relative;
+    z-index: 5001;
+  }
+
+  a {
+    color: $color-grey-500;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-blue-dark;
+    }
+  }
+}
+
+.fabricator-nav-text {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  list-style: none;
+  height: 60px;
+  line-height: 18px;
+}
+
+.fabricator-nav-title {
+  font-weight: 700;
+  margin-top: 30px;
+}
+
+.fabricator-edit-block {
+  width: 100%;
+}
+
+.fabricator-nav-menu-items {
+  width: 100%;
+  list-style: none;
+  font-size: 16px;
+  padding: 16px 0;
+
+  .content {
+    padding: 0 30px;
+  }
+
+  .title {
+    font-weight: 600;
+  }
+
+  .menu__item {
+    &:hover {
+      background-color: #45ade833;
+      width: 100%;
+      transition: 300ms ease-out;
+      cursor: pointer;
+    }
+
+    a {
+      display: block;
+      padding: 12px 30px;
+
+      .menu__item__type {
+        font-weight: 700;
+        pointer-events: none;
+      }
+
+      .menu__item__title {
+        display: inline-block;
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+.fabricator-navbar-toggle {
+  background-color: $color-white;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  color: $color-grey-600;
+}
+
+.block-options {
+  margin-top: 12px;
+  padding: 0 30px;
+}
+
+.fabricator-btn {
+  padding: 10px 15px;
+  height: 36px;
+  border: none;
+  border-radius: 3px;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+  transition: 300ms ease-in-out;
+
+  &__icon {
+    &--left::before {
+      margin-right: 8px;
+    }
+    &--right::before {
+      margin-left: 8px;
+    }
+
+    &-add::before {
+      content: '';
+
+      @include icon('plus-white', 10px, 10px);
+    }
+
+    &-close::before {
+      content: '';
+
+      @include icon('close', 10px, 10px);
+    }
+
+    &-settings::before {
+      content: '';
+
+      @include icon('settings', 14px, 14px);
+    }
+  }
+
+  .icon {
+    padding-right: 12px;
+  }
+
+  &--bg-none,
+  &--default {
+    background: none;
+    border: 1px solid transparent;
+
+    &:hover {
+      border: 1px solid $color-blue-dark;
+    }
+  }
+
+  &--outline-green {
+    background: none;
+    border: 1px solid $color-green;
+    color: $color-green;
+
+    &:hover {
+      background: $color-green;
+      color: $color-white;
+    }
+  }
+
+  &--blue {
+    background: $color-blue-dark;
+    color: $color-white;
+
+    &:hover {
+      background: lighten($color: $color-blue-dark, $amount: 5);
+    }
+  }
+}
+
+.fabricator-page-settings {
+  border-top: 1px solid $color-grey-100;
+  position: absolute;
+  bottom: 0;
+  padding: 20px 30px;
+  width: 100%;
+}
+
+.fabricator-input__block {
+  padding: 16px 30px;
+  width: 100%;
+  border-top: 1px solid $color-grey-100;
+  border-bottom: 1px solid $color-grey-100;
+}
+
+.fabricator-input {
+  margin-bottom: 15px;
+
+  .label {
+    font-size: 14px;
+    line-height: 16px;
+    margin-bottom: 10px;
+  }
+
+  .text-field,
+  .textarea-field,
+  .select-field {
+    background: $color-white;
+    border: 1px solid $color-grey-100;
+    width: 100%;
+    font-size: 14px;
+    padding: 15px;
+    line-height: 20px;
+  }
+}
+
+.fabricator-loader {
+  display: block;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+}
+
+.fabricator-loader:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid $color-blue-dark;
+  border-color: $color-blue-dark transparent $color-blue-dark transparent;
+  animation: fabricator-loader 1.2s linear infinite;
+}
+@keyframes fabricator-loader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

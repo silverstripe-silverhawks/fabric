@@ -3,4 +3,5 @@
     blocks="$Blocks"
     block-types="$BlockTypes"
     settings="$Settings"
+    username="$Username"
 ></div>

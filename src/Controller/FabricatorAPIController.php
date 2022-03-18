@@ -27,11 +27,11 @@ class FabricatorAPIController extends Controller {
         $this->fabricator = new Fabricator();
     }
 
-    public function getPageInformation(HTTPRequest $request)
+    public function getPage(HTTPRequest $request)
     {
         $pageId = $request->param('ID');
         $className = $request->param('ClassName');
-        return $fabricator->getPageInformation($className, $pageId);
+        return $this->fabricator->getPageInformation($className, $pageId);
     }
 
     public function getBlockTypes(HTTPRequest $request) {
@@ -49,10 +49,34 @@ class FabricatorAPIController extends Controller {
         return json_encode($blockTypes->toNestedArray());
     }
 
-    public function saveBlock(HTTPRequest $request) {
-        $data = json_decode($request->getBody(), true);
-        $block = $this->fabricator->saveBlock($data);
-        return $data;
+    public function getDataObject(HTTPRequest $request)
+    {
+        $id = $request->getVar('id');
+        if (!$id) {
+            return 'error';
+        }
+
+        $body = [
+            'HasMany' => [],
+        ];
+
+
+        $hasMany = $this->fabricator->getHasManyDetailsFromElementID($id);
+
+        $body['HasMany'] = $hasMany;
+
+        return json_encode($body);
+    }
+
+    // expects the body to contain an ID and data ob
+    public function saveBlock(HTTPRequest $request)
+    {
+        $body = json_decode($request->getBody(), true);
+        $id = (int) $body['id'];
+        $data = $body['data'];
+        $block = $this->fabricator->saveBlock($id, $data);
+
+        // return $block;
     }
 
     public function getObjectById(HTTPRequest $request)

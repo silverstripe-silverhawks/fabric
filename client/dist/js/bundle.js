@@ -74,10 +74,6 @@
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__("./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
@@ -86,17 +82,84 @@ var _reactDom = __webpack_require__("./node_modules/react-dom/index.js");
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _Navbar = __webpack_require__("./client/src/components/Navbar.js");
+var _Fabric = __webpack_require__("./client/src/components/Fabric.js");
 
-var _Navbar2 = _interopRequireDefault(_Navbar);
-
-var _settings = __webpack_require__("./client/src/icons/settings.svg");
-
-var _settings2 = _interopRequireDefault(_settings);
+var _Fabric2 = _interopRequireDefault(_Fabric);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+window.document.addEventListener('DOMContentLoaded', function () {
+  _reactDom2.default.render(_react2.default.createElement(_Fabric2.default, null), document.getElementById('fabricator-app'));
+});
+
+/***/ }),
+
+/***/ "./client/src/components/API.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var API = {
+  getBlockInfo: function getBlockInfo(id) {
+    return fetch('/fabricator/api/getDataObject/?id=' + id, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'same-origin'
+    }).then(function (res) {
+      return res.json();
+    });
+  },
+  saveBlock: function saveBlock(id, data) {
+    fetch('/fabricator/api/saveBlock', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({ id: id, data: data })
+    });
+  }
+};
+
+exports.default = API;
+
+/***/ }),
+
+/***/ "./client/src/components/Fabric.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__("./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _ViewBlock = __webpack_require__("./client/src/components/ViewBlock.js");
+
+var _ViewBlock2 = _interopRequireDefault(_ViewBlock);
+
+var _NewBlock = __webpack_require__("./client/src/components/NewBlock.js");
+
+var _NewBlock2 = _interopRequireDefault(_NewBlock);
+
+var _PageSettings = __webpack_require__("./client/src/components/PageSettings.js");
+
+var _PageSettings2 = _interopRequireDefault(_PageSettings);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -104,55 +167,71 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Fabricator = function (_React$Component) {
-  _inherits(Fabricator, _React$Component);
+var Fabric = function (_React$Component) {
+  _inherits(Fabric, _React$Component);
 
-  function Fabricator(props) {
-    _classCallCheck(this, Fabricator);
+  function Fabric(props) {
+    _classCallCheck(this, Fabric);
 
-    var _this = _possibleConstructorReturn(this, (Fabricator.__proto__ || Object.getPrototypeOf(Fabricator)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Fabric.__proto__ || Object.getPrototypeOf(Fabric)).call(this, props));
 
     var ROOT = document.querySelector('#fabricator-app');
+    var username = ROOT.getAttribute('username');
+
     var allowedFields = JSON.parse(ROOT.getAttribute('allowed-fields'));
     var blocks = JSON.parse(ROOT.getAttribute('blocks'));
     var settings = JSON.parse(ROOT.getAttribute('settings'));
     var blockTypes = JSON.parse(ROOT.getAttribute('block-types'));
+    var pageFields = JSON.parse(ROOT.getAttribute('page-fields'));
 
     _this.state = {
+      username: username,
+      pageFields: pageFields,
       allowedFields: allowedFields,
       blocks: blocks,
       blockTypes: blockTypes,
       settings: settings,
-      hasBlocks: blocks.length > 0,
-
-      showEditBlock: false,
-      editBlockId: -1,
-      editBlockInfo: [],
-      addBlockInfo: []
+      viewState: 'home',
+      editBlockInfo: []
     };
 
-    _this.addBlock = _this.addBlock.bind(_this);
+    _this.changeView = _this.changeView.bind(_this);
     _this.highlightGlobal = _this.highlightGlobal.bind(_this);
-    _this.highlightBlock = _this.highlightBlock.bind(_this);
-    _this.removeHighlightBlock = _this.removeHighlightBlock.bind(_this);
+    _this.highlightBlock = _this.addHighlight.bind(_this);
+    _this.removeHighlightBlock = _this.removeHighlight.bind(_this);
     _this.openBlock = _this.openBlock.bind(_this);
-    _this.closeBlock = _this.closeBlock.bind(_this);
-    _this.saveBlock = _this.saveBlock.bind(_this);
-    _this.updateValue = _this.updateValue.bind(_this);
     return _this;
   }
 
-  _createClass(Fabricator, [{
+  _createClass(Fabric, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {}
+  }, {
+    key: 'changeView',
+    value: function changeView(view) {
+      var clearEditState = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      this.setState({
+        viewState: view,
+        editBlockInfo: clearEditState ? [] : this.state.editBlockInfo
+      });
+
+      if (clearEditState) {
+        this.removeHighlight();
+      }
+    }
+  }, {
     key: 'openBlock',
     value: function openBlock(e) {
+      this.removeHighlight(e);
       var editBlockId = e.target.id;
-
+      document.querySelector('#e' + editBlockId).classList.add('fabricator-open');
       var blocks = this.state.blocks.filter(function (element) {
         return element.ID.value === parseInt(e.target.id, 10);
       });
+
       this.setState({
-        showEditBlock: true,
-        editBlockId: editBlockId,
+        viewState: 'editBlock',
         editBlockInfo: blocks[0]
       });
     }
@@ -162,69 +241,18 @@ var Fabricator = function (_React$Component) {
       document.querySelector('.' + element).classList.add('fabricator-highlight');
     }
   }, {
-    key: 'highlightBlock',
-    value: function highlightBlock(e) {
+    key: 'addHighlight',
+    value: function addHighlight(e) {
       var editBlockId = e.target.id;
       document.querySelector('#e' + editBlockId).classList.add('fabricator-highlight');
     }
   }, {
-    key: 'removeHighlightBlock',
-    value: function removeHighlightBlock(e) {
+    key: 'removeHighlight',
+    value: function removeHighlight(e) {
       var alreadyHighlighting = document.querySelector('.fabricator-highlight');
       if (alreadyHighlighting !== null) {
         alreadyHighlighting.classList.remove('fabricator-highlight');
       }
-    }
-  }, {
-    key: 'addBlock',
-    value: function addBlock(e) {
-      this.setState({
-        showEditBlock: true,
-        editBlockId: -1
-      });
-    }
-  }, {
-    key: 'closeBlock',
-    value: function closeBlock(e) {
-      this.setState({
-        showEditBlock: false,
-        editBlockId: -1,
-        editBlockInfo: []
-      });
-
-      this.removeHighlightBlock();
-    }
-  }, {
-    key: 'updateValue',
-    value: function updateValue(e, key) {
-      var value = e.target.value;
-      this.setState(function (prevState) {
-        return {
-          editBlockInfo: _extends({}, prevState.editBlockInfo, _defineProperty({}, key, _extends({}, prevState.editBlockInfo[key], {
-            value: value
-          })))
-        };
-      });
-
-      var id = this.state.editBlockId;
-      var type = this.state.editBlockInfo[key].type.toLowerCase();
-      var element = document.querySelector('#e' + id);
-
-      if (type === 'htmltext') type = 'content';
-      element.querySelector('[class*="__' + type + '"]').innerHTML = value;
-    }
-  }, {
-    key: 'saveBlock',
-    value: function saveBlock() {
-      console.log(this.state.editBlockInfo);
-      fetch('/fabricator/api/saveBlock', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify(this.state.editBlockInfo)
-      });
     }
   }, {
     key: 'render',
@@ -233,7 +261,7 @@ var Fabricator = function (_React$Component) {
 
       var websiteTitle = this.state.settings.Title.value;
       var blocks = this.state.blocks;
-      var renderBlocksList = function renderBlocksList() {
+      var renderHomeView = function renderHomeView() {
         return _react2.default.createElement(
           'div',
           { className: 'fabricator-nav-menu__container' },
@@ -256,7 +284,7 @@ var Fabricator = function (_React$Component) {
                   onMouseEnter: function onMouseEnter(e) {
                     return _this2.highlightGlobal(e, 'header');
                   },
-                  onMouseLeave: _this2.removeHighlightBlock
+                  onMouseLeave: _this2.removeHighlight
                 },
                 'Header'
               )
@@ -272,7 +300,7 @@ var Fabricator = function (_React$Component) {
                   onMouseEnter: function onMouseEnter(e) {
                     return _this2.highlightGlobal(e, 'footer');
                   },
-                  onMouseLeave: _this2.removeHighlightBlock
+                  onMouseLeave: _this2.removeHighlight
                 },
                 'Footer'
               )
@@ -283,8 +311,17 @@ var Fabricator = function (_React$Component) {
             { className: 'fabricator-nav-menu-items' },
             _react2.default.createElement(
               'div',
-              { className: 'title' },
-              'Page content'
+              { className: 'content' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                'Page content'
+              ),
+              blocks.length === 0 && _react2.default.createElement(
+                'div',
+                null,
+                'No blocks on this page'
+              )
             ),
             blocks.map(function (block) {
               var blockTitle = block.Title.value;
@@ -295,7 +332,7 @@ var Fabricator = function (_React$Component) {
                 { className: 'menu__item', key: key },
                 _react2.default.createElement(
                   'a',
-                  { role: 'button', tabIndex: 0, onClick: _this2.openBlock, onMouseEnter: _this2.highlightBlock, onMouseLeave: _this2.removeHighlightBlock, id: key },
+                  { role: 'button', tabIndex: 0, onClick: _this2.openBlock, onMouseEnter: _this2.addHighlight, onMouseLeave: _this2.removeHighlight, id: key },
                   _react2.default.createElement(
                     'div',
                     { className: 'menu__item__type' },
@@ -314,7 +351,9 @@ var Fabricator = function (_React$Component) {
               { className: 'block-options' },
               _react2.default.createElement(
                 'button',
-                { className: 'fabricator-button fabricator-button--blue', onClick: _this2.addBlock },
+                { className: 'fabricator-btn fabricator-btn--blue fabricator-btn__icon--left fabricator-btn__icon-add', onClick: function onClick() {
+                    return _this2.changeView('addBlock');
+                  } },
                 'Add a block'
               )
             )
@@ -322,99 +361,19 @@ var Fabricator = function (_React$Component) {
         );
       };
 
-      var renderEditBlock = function renderEditBlock() {
-        var newBlock = _this2.state.editBlockId === -1;
-        var info = _this2.state.editBlockInfo;
+      var renderControls = function renderControls() {
 
-        var getTitle = function getTitle() {
-          if (_this2.state.editBlockId === -1) {
-            return 'Add a block';
+        var getBlockType = function getBlockType() {
+          if (_this2.state.editBlockInfo.Type) {
+            return _this2.state.editBlockInfo.Type.value;
           }
-          return _this2.state.editBlockInfo.Title.value;
+          return 'New Block';
         };
 
-        var renderInput = function renderInput(elementField, key) {
-          if (elementField.type === 'Boolean') {
-            return _react2.default.createElement('input', { type: 'checkbox', id: elementField.type, name: elementField.type, defaultChecked: parseInt(elementField.value, 10) });
-          } else if (elementField.type === 'HTMLText') {
-            return _react2.default.createElement('textarea', {
-              className: 'text-field',
-              rows: '10',
-              type: 'text',
-              name: elementField.type,
-              value: elementField.value,
-              onChange: function onChange(e) {
-                return _this2.updateValue(e, key);
-              }
-            });
-          }
-          return _react2.default.createElement('input', {
-            className: 'text-field',
-            type: 'text',
-            name: elementField.type,
-            value: elementField.value,
-            onChange: function onChange(e) {
-              return _this2.updateValue(e, key);
-            }
-          });
-        };
-
-        var renderNewBlock = function renderNewBlock() {
-          var blockTypes = _this2.state.blockTypes;
-
+        if (_this2.state.viewState === 'editBlock' || _this2.state.viewState === 'addBlock') {
           return _react2.default.createElement(
             'div',
-            { className: 'fabricator-input' },
-            _react2.default.createElement(
-              'label',
-              { htmlFor: 'Title' },
-              'Title'
-            ),
-            _react2.default.createElement(
-              'select',
-              { className: 'select-field', value: 'Content' },
-              blockTypes.map(function (ele) {
-                return _react2.default.createElement(
-                  'option',
-                  { key: ele.Title, value: ele.Title },
-                  ele.Title
-                );
-              })
-            )
-          );
-        };
-
-        var renderEditBlockFields = function renderEditBlockFields() {
-          return Object.keys(_this2.state.editBlockInfo).map(function (eleKey, index) {
-            if (eleKey !== 'ID' && eleKey !== 'Type') {
-              var elementField = _this2.state.editBlockInfo[eleKey];
-              return _react2.default.createElement(
-                'div',
-                { key: index, className: 'fabricator-input' },
-                _react2.default.createElement(
-                  'div',
-                  { className: 'label' },
-                  eleKey
-                ),
-                renderInput(elementField, eleKey)
-              );
-            }
-          });
-        };
-
-        var renderFields = function renderFields() {
-          if (newBlock) {
-            return renderNewBlock();
-          }
-          return renderEditBlockFields();
-        };
-
-        return _react2.default.createElement(
-          'div',
-          { className: 'fabricator-edit-block' },
-          _react2.default.createElement(
-            'div',
-            { className: 'fabricator-edit-block__header' },
+            { className: 'header__controls' },
             _react2.default.createElement(
               'div',
               { className: 'options' },
@@ -425,65 +384,112 @@ var Fabricator = function (_React$Component) {
               ),
               _react2.default.createElement(
                 'button',
-                { className: 'fabricator-button fabricator-button--right', onClick: _this2.closeBlock },
+                { className: 'fabricator-btn fabricator-btn--bg-none fabricator-btn--right fabricator-btn__icon-close fabricator-btn__icon--left', onClick: function onClick() {
+                    return _this2.changeView('home', true);
+                  } },
                 'Cancel'
               )
             ),
             _react2.default.createElement(
               'div',
               { className: 'title' },
-              getTitle()
+              getBlockType()
             )
+          );
+        }
+
+        return _react2.default.createElement(
+          'div',
+          { className: 'header__content' },
+          _react2.default.createElement(
+            'h3',
+            null,
+            websiteTitle
           ),
           _react2.default.createElement(
-            'div',
-            { className: 'fabricator-input__block' },
-            renderFields(),
-            _react2.default.createElement(
-              'div',
-              { className: 'fabricator-edit-block-content-footer' },
-              _react2.default.createElement(
-                'button',
-                { className: 'fabricator-button fabricator-button--outline-green', onClick: _this2.saveBlock },
-                'Save'
-              )
-            )
+            'a',
+            { href: '/' },
+            'View site tree'
           )
+        );
+      };
+
+      var renderBlockView = function renderBlockView() {
+        var viewState = _this2.state.viewState;
+
+
+        if (viewState === 'home') {
+          return renderHomeView();
+        }
+
+        if (viewState === 'settings') {
+          return _react2.default.createElement(_PageSettings2.default, { settings: [] });
+        }
+
+        if (viewState === 'addBlock') {
+          return _react2.default.createElement(
+            'div',
+            { className: 'fabric-edit-block' },
+            _react2.default.createElement(_NewBlock2.default, null),
+            ';'
+          );
+        }
+
+        return _react2.default.createElement(
+          'div',
+          { className: 'fabric-edit-block' },
+          _react2.default.createElement(_ViewBlock2.default, { blockInfo: _this2.state.editBlockInfo })
         );
       };
 
       return _react2.default.createElement(
         'div',
         null,
+        _react2.default.createElement('div', { className: 'fabricator-overlay ' + (this.state.viewState === 'editBlock' ? 'shown' : '') }),
         _react2.default.createElement(
           'div',
-          { className: 'fabricator-sidebar' },
+          { className: 'fabricator' },
           _react2.default.createElement(
-            'nav',
-            { className: 'fabricator-nav-menu' },
+            'div',
+            { className: 'fabricator-header' },
             _react2.default.createElement(
               'div',
-              { className: 'fabricator-menu-title' },
+              { className: 'header__actions' },
               _react2.default.createElement(
-                'h3',
-                null,
-                websiteTitle
+                'a',
+                { href: '/', className: 'username' },
+                this.state.username
               ),
               _react2.default.createElement(
-                'h5',
-                null,
-                'View site tree'
+                'div',
+                { className: 'links' },
+                _react2.default.createElement(
+                  'a',
+                  { href: '/admin/pages/edit/show/' + this.state.pageFields.ID.value, rel: 'noreferrer', target: '_blank' },
+                  'Open CMS'
+                ),
+                _react2.default.createElement(
+                  'span',
+                  { className: 'divider' },
+                  '|'
+                ),
+                _react2.default.createElement(
+                  'a',
+                  { href: '/Security/logout' },
+                  'Logout'
+                )
               )
             ),
-            this.state.showEditBlock ? renderEditBlock() : renderBlocksList(),
+            renderControls()
+          ),
+          renderBlockView(),
+          _react2.default.createElement(
+            'div',
+            { className: 'fabricator-page-settings' },
             _react2.default.createElement(
-              'div',
-              { className: 'fabricator-page-settings' },
-              _react2.default.createElement(
-                'button',
-                { className: 'fabricator-button fabricator-button--default' },
-                'Page settings'
-              )
+              'button',
+              { className: 'fabricator-btn fabricator-btn--default fabricator-btn__icon--left fabricator-btn__icon-settings' },
+              'Page settings'
             )
           )
         )
@@ -491,16 +497,14 @@ var Fabricator = function (_React$Component) {
     }
   }]);
 
-  return Fabricator;
+  return Fabric;
 }(_react2.default.Component);
 
-window.document.addEventListener('DOMContentLoaded', function () {
-  _reactDom2.default.render(_react2.default.createElement(Fabricator, null), document.getElementById('fabricator-app'));
-});
+exports.default = Fabric;
 
 /***/ }),
 
-/***/ "./client/src/components/DummyData.js":
+/***/ "./client/src/components/NewBlock.js":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -509,114 +513,72 @@ window.document.addEventListener('DOMContentLoaded', function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var DummyData = exports.DummyData = [{
-  title: 'Global Features',
-  cName: 'fabricator-nav-title'
-}, {
-  title: 'Header',
-  cName: 'fabricator-nav-text'
-}, {
-  title: 'Page Hero',
-  cName: 'fabricator-nav-text'
-}, {
-  title: 'Page Utilities',
-  cName: 'fabricator-nav-text'
-}, {
-  title: 'Footer',
-  cName: 'fabricator-nav-text'
-}, {
-  title: 'Page Content',
-  cName: 'fabricator-nav-title'
-}, {
-  title: 'Feature tile Block',
-  cName: 'fabricator-nav-text'
-}, {
-  title: 'Step Block',
-  cName: 'fabricator-nav-text'
-}, {
-  title: 'Video Block',
-  cName: 'fabricator-nav-text'
-}];
 
-/***/ }),
-
-/***/ "./client/src/components/Navbar.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__("./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _DummyData = __webpack_require__("./client/src/components/DummyData.js");
-
-var _TopNavFabricator = __webpack_require__("./client/src/components/TopNavFabricator.js");
-
-var _TopNavFabricator2 = _interopRequireDefault(_TopNavFabricator);
-
-var _logstate = __webpack_require__("./client/src/icons/logstate.svg");
-
-var _logstate2 = _interopRequireDefault(_logstate);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Navbar = function Navbar() {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  return _react2.default.createElement(
-    'div',
-    { className: 'fabricator-sidebar' },
-    _react2.default.createElement(
-      'nav',
-      { className: 'fabricator-nav-menu' },
-      _react2.default.createElement(
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var NewBlock = function (_React$Component) {
+  _inherits(NewBlock, _React$Component);
+
+  function NewBlock(props) {
+    _classCallCheck(this, NewBlock);
+
+    var _this = _possibleConstructorReturn(this, (NewBlock.__proto__ || Object.getPrototypeOf(NewBlock)).call(this, props));
+
+    _this.state = {
+      blockTypes: [{
+        'Title': 'Content'
+      }]
+    };
+    return _this;
+  }
+
+  _createClass(NewBlock, [{
+    key: 'render',
+    value: function render() {
+      var blockTypes = this.state.blockTypes;
+      return _react2.default.createElement(
         'div',
-        { className: 'fabricator-menu-title' },
+        { className: 'fabricator-input' },
         _react2.default.createElement(
-          'h3',
-          null,
-          'Login to MyNZQA'
+          'label',
+          { htmlFor: 'Title' },
+          'Title'
         ),
         _react2.default.createElement(
-          'h5',
-          null,
-          'View site tree'
+          'select',
+          { className: 'select-field', value: 'Content' },
+          blockTypes.map(function (ele) {
+            return _react2.default.createElement(
+              'option',
+              { key: ele.Title, value: ele.Title },
+              ele.Title
+            );
+          })
         )
-      ),
-      _react2.default.createElement(
-        'ul',
-        { className: 'fabricator-nav-menu-items' },
-        _DummyData.DummyData.map(function (item, index) {
-          return _react2.default.createElement(
-            'li',
-            { key: index, className: item.cName },
-            _react2.default.createElement(
-              'span',
-              null,
-              item.title
-            )
-          );
-        }),
-        _react2.default.createElement(
-          'button',
-          { className: 'fabricator-button' },
-          'Add a block'
-        )
-      )
-    )
-  );
-};
+      );
+    }
+  }]);
 
-exports.default = Navbar;
+  return NewBlock;
+}(_react2.default.Component);
+
+exports.default = NewBlock;
 
 /***/ }),
 
-/***/ "./client/src/components/TopNavFabricator.js":
+/***/ "./client/src/components/PageSettings.js":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -626,35 +588,305 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = __webpack_require__("./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var TopNavFabricator = function TopNavFabricator() {
-  return _react2.default.createElement(
-    'div',
-    null,
-    'TopNavFabricator'
-  );
-};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-exports.default = TopNavFabricator;
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PageSettings = function (_React$Component) {
+  _inherits(PageSettings, _React$Component);
+
+  function PageSettings(props) {
+    _classCallCheck(this, PageSettings);
+
+    var _this = _possibleConstructorReturn(this, (PageSettings.__proto__ || Object.getPrototypeOf(PageSettings)).call(this, props));
+
+    _this.setState({
+      settings: []
+    });
+    return _this;
+  }
+
+  _createClass(PageSettings, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        'Page settings'
+      );
+    }
+  }]);
+
+  return PageSettings;
+}(_react2.default.Component);
+
+exports.default = PageSettings;
 
 /***/ }),
 
-/***/ "./client/src/icons/logstate.svg":
+/***/ "./client/src/components/ViewBlock.js":
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "images/logstate.svg";
+"use strict";
 
-/***/ }),
 
-/***/ "./client/src/icons/settings.svg":
-/***/ (function(module, exports, __webpack_require__) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-module.exports = __webpack_require__.p + "images/settings.svg";
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__("./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _API = __webpack_require__("./client/src/components/API.js");
+
+var _API2 = _interopRequireDefault(_API);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ViewBlock = function (_React$Component) {
+  _inherits(ViewBlock, _React$Component);
+
+  function ViewBlock(props) {
+    _classCallCheck(this, ViewBlock);
+
+    var _this = _possibleConstructorReturn(this, (ViewBlock.__proto__ || Object.getPrototypeOf(ViewBlock)).call(this, props));
+
+    var blockInfo = props.blockInfo;
+    var id = props.blockInfo.ID.value;
+
+    _this.state = {
+      id: id,
+      blockInfo: blockInfo,
+      hasMany: [],
+      loading: true
+    };
+
+    _this.saveBlock = _this.saveBlock.bind(_this);
+    _this.updateValue = _this.updateValue.bind(_this);
+    return _this;
+  }
+
+  _createClass(ViewBlock, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      _API2.default.getBlockInfo(this.state.id).then(function (data) {
+        var hasMany = [];
+        Object.keys(data.HasMany).map(function (hasManyKey, index) {
+          hasMany.push({
+            Title: hasManyKey,
+            Values: data.HasMany[hasManyKey]
+          });
+        });
+
+        _this2.setState({
+          loading: false,
+          hasMany: hasMany
+        });
+      }).catch(function (error) {
+        console.error(error);
+      });
+    }
+  }, {
+    key: 'updateValue',
+    value: function updateValue(e, key) {
+      var value = e.target.value;
+      this.setState(function (prevState) {
+        return {
+          blockInfo: _extends({}, prevState.blockInfo, _defineProperty({}, key, _extends({}, prevState.blockInfo[key], {
+            value: value,
+            hasChanged: true
+          })))
+        };
+      });
+
+      var id = this.state.editBlockId;
+      var type = this.state.editBlockInfo[key].type.toLowerCase();
+      var element = document.querySelector('#e' + id);
+
+      if (type === 'htmltext') type = 'content';
+      element.querySelector('[class*="__' + type + '"]').innerHTML = value;
+    }
+  }, {
+    key: 'saveBlock',
+    value: function saveBlock() {
+      var _this3 = this;
+
+      var changedValues = {};
+
+      Object.entries(this.state.blockInfo).forEach(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+            key = _ref2[0],
+            value = _ref2[1];
+
+        if ('hasChanged' in value) {
+          changedValues[key] = _this3.state.blockInfo[key];
+        }
+      });
+
+      if (Object.keys(changedValues).length > 0) {
+        _API2.default.saveBlock(id, changedValues).then(function (res) {
+          return res.text();
+        }).then(function (data) {
+          return console.log(data);
+        }).catch(function (error) {
+          console.error(error);
+        });
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this4 = this;
+
+      var newBlock = this.state.id === -1;
+      var info = this.state.blockInfo;
+
+      var getTitle = function getTitle() {
+        return _this4.state.blockInfo.Title.value;
+      };
+
+      var renderInput = function renderInput(elementField, key) {
+        if (elementField.type === 'Boolean') {
+          return _react2.default.createElement('input', { type: 'checkbox', id: elementField.type, name: elementField.type, defaultChecked: parseInt(elementField.value, 10) });
+        } else if (elementField.type === 'HTMLText') {
+          return _react2.default.createElement('textarea', {
+            className: 'text-field',
+            rows: '10',
+            type: 'text',
+            name: elementField.type,
+            value: elementField.value,
+            onChange: function onChange(e) {
+              return _this4.updateValue(e, key);
+            }
+          });
+        }
+
+        return _react2.default.createElement('input', {
+          className: 'text-field',
+          type: 'text',
+          name: elementField.type,
+          value: elementField.value,
+          onChange: function onChange(e) {
+            return _this4.updateValue(e, key);
+          }
+        });
+      };
+
+      var renderEditBlockFields = function renderEditBlockFields() {
+        var fields = Object.keys(_this4.state.blockInfo).map(function (eleKey, index) {
+          if (eleKey !== 'ID' && eleKey !== 'Type') {
+            var elementField = _this4.state.blockInfo[eleKey];
+            return _react2.default.createElement(
+              'div',
+              { key: index, className: 'fabricator-input' },
+              _react2.default.createElement(
+                'div',
+                { className: 'label' },
+                eleKey
+              ),
+              renderInput(elementField, eleKey)
+            );
+          }
+        });
+
+        return _react2.default.createElement(
+          'div',
+          { className: 'fabricator-edit-block__content' },
+          _react2.default.createElement(
+            'div',
+            { className: 'fabricator-input__block' },
+            fields
+          )
+        );
+      };
+
+      var renderHasMany = function renderHasMany() {
+        var hasMany = _this4.state.hasMany;
+        return hasMany.map(function (ele) {
+          return _react2.default.createElement(
+            'div',
+            { className: 'fabricator-edit-block__content' },
+            _react2.default.createElement(
+              'div',
+              { className: 'fabricator-input__block' },
+              _react2.default.createElement(
+                'div',
+                { key: ele.Title },
+                _react2.default.createElement(
+                  'h3',
+                  null,
+                  ele.Title
+                ),
+                _react2.default.createElement(
+                  'ul',
+                  null,
+                  Object.keys(ele.Values).map(function (eleValue, index) {
+                    return _react2.default.createElement(
+                      'li',
+                      { key: index },
+                      ele.Values[eleValue].Title.value
+                    );
+                  })
+                )
+              )
+            )
+          );
+        });
+      };
+
+      if (this.state.loading) {
+        return _react2.default.createElement('div', { className: 'fabricator-loader' });
+      }
+
+      return _react2.default.createElement(
+        'div',
+        null,
+        renderEditBlockFields(),
+        renderHasMany(),
+        _react2.default.createElement(
+          'div',
+          { className: 'fabricator-edit-block-content-footer' },
+          _react2.default.createElement(
+            'button',
+            { className: 'fabricator-btn fabricator-btn--outline-green', onClick: this.saveBlock },
+            'Save'
+          )
+        )
+      );
+    }
+  }]);
+
+  return ViewBlock;
+}(_react2.default.Component);
+
+exports.default = ViewBlock;
 
 /***/ }),
 

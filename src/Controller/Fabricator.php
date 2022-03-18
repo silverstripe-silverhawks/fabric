@@ -5,9 +5,8 @@ namespace SilverStripe\Fabricator\Controller;
 use DNADesign\Elemental\Models\BaseElement;
 use DNADesign\Elemental\Models\ElementalArea;
 use DNADesign\Elemental\Services\ElementTypeRegistry;
-use Dynamic\Elements\Features\Elements\ElementFeatures;
+use Page;
 use SilverStripe\Control\Controller;
-use SilverStripe\Core\ClassInfo;
 use SilverStripe\Dev\Debug;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
@@ -35,8 +34,15 @@ class Fabricator extends Controller
         'Tagline',
     ];
 
+    public function getElementById(int $id): DataObject
+    {
+        $className = BaseElement::get()->filter('ID', $id)->first()->getField('ClassName');
+        $instance = singleton($className);
+        return $instance::get()->filter('ID', $id)->first();
+    }
+
     public function getPageInformation(string $className, int $pageId) {
-        $fields = $this->getFieldsOnPage($className);
+        $fields = $this->getFieldsOnPage($className, $pageId);
         $siteConfig = $this->getAllowedSiteConfigData();
 
         return [
@@ -50,6 +56,11 @@ class Fabricator extends Controller
         $objectSchema = DataObject::getSchema()->fieldSpecs($className);
         foreach ($objects as $key => $value) {
             if (!in_array($key, $this->disabled_fields)) {
+
+                if ($objectSchema[$key] === 'HTMLText') {
+                    $value = htmlentities($value);
+                }
+
                 $allowedFields[$key] = [
                     'type' => $objectSchema[$key],
                     'value' => $value
@@ -63,12 +74,12 @@ class Fabricator extends Controller
     /**
      * Returns only the allowed fields on a page with its type
      */
-    public function getFieldsOnPage(string $className)
+    public function getFieldsOnPage(string $className, int $pageId)
     {
         $allowedFields = [];
         // $configDisallowedFields = Config::inst()->get(FabricatorAPIController::class, 'disallowed_fields');
 
-        $pageObjects = DataObject::get($className)->first()->toMap();
+        $pageObjects = Page::get_by_id($pageId)->toMap();
         $allowedFields = $this->getAllowedFieldsByObject($pageObjects, $className);
         return $allowedFields;
     }
@@ -94,19 +105,22 @@ class Fabricator extends Controller
         $elementalBlocks = [];
         $area = ElementalArea::get()
             ->filter('ID', $elementalAreaId)
-            ->first()
-            ->Elements()
-            ->each(function ($element) use (&$elementalBlocks) {
+            ->first();
 
-                $allowedFields = $this->getAllowedFieldsByObject($element->toMap(), $element->ClassName);
-                // add the type
-                $allowedFields['Type'] = [
-                    'type' => 'string',
-                    'value' => $element->getType(),
-                ];
+        if ($area !== null) {
+            $area
+                ->Elements()
+                ->each(function ($element) use (&$elementalBlocks) {
+                    $allowedFields = $this->getAllowedFieldsByObject($element->toMap(), $element->ClassName);
+                    // add the type
+                    $allowedFields['Type'] = [
+                        'type' => 'string',
+                        'value' => $element->getType(),
+                    ];
 
-                $elementalBlocks[] = $allowedFields;
-            });
+                    $elementalBlocks[] = $allowedFields;
+                });
+        }
 
         return $elementalBlocks;
     }
@@ -126,24 +140,32 @@ class Fabricator extends Controller
         return $blockTypes->toNestedArray();
     }
 
-    public function getHasManyDetailsFromObject() {
-        // if ($element->hasMany()) {
-        //     foreach ($element->hasMany() as $relationship => $class) {
-        //         $components = $element->getComponents($relationship);
-        //         foreach ($components as $component) {
-        //             $componentFields = $this->getAllowedFieldsByObject($component->toMap(), $component->ClassName);
-        //             $allowedFields['HasMany'][$relationship][] = $componentFields;
-        //         }
-        //     }
-        // }
+    //
+    public function getHasManyDetailsFromElementID(int $id) {
+        $element = $this->getElementById($id);
+        $hasMany = [];
+        if ($element->hasMany()) {
+            foreach ($element->hasMany() as $relationship => $class) {
+                $components = $element->getComponents($relationship);
+                foreach ($components as $component) {
+                    $componentFields = $this->getAllowedFieldsByObject($component->toMap(), $component->ClassName);
+                    $hasMany[$relationship][] = $componentFields;
+                }
+            }
+        }
+
+        return $hasMany;
     }
 
-    public function saveBlock($data) {
-        $id = 3;
-        $className = BaseElement::get()->filter('ID', $id)->first()->getField('ClassName');
-        $instance = singleton($className);
+    public function saveBlock(int $id, array $data): void
+    {
+        $element = $this->getElementById($id);
+        $hasMany = $this->getHasManyDetailsFromElementID($id);
 
-        $dataValues = $instance::get()->filter('ID', $id)->first();
+        foreach ($data as $fieldName => $fieldContent) {
+            $element->$fieldName = $data[$fieldName]['value'];
+        }
 
+        $element->write();
     }
 }

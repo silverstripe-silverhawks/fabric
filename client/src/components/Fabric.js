@@ -1,47 +1,69 @@
 import React from 'react';
+import ViewBlock from './ViewBlock';
+import NewBlock from './NewBlock';
+import PageSettings from './PageSettings';
 
 class Fabric extends React.Component {
   constructor(props) {
     super(props);
+
     // unsure if this is the right way??
     const ROOT = document.querySelector('#fabricator-app');
+    const username = ROOT.getAttribute('username');
+
     const allowedFields = JSON.parse(ROOT.getAttribute('allowed-fields'));
     const blocks = JSON.parse(ROOT.getAttribute('blocks'));
     const settings = JSON.parse(ROOT.getAttribute('settings'));
     const blockTypes = JSON.parse(ROOT.getAttribute('block-types'));
+    const pageFields = JSON.parse(ROOT.getAttribute('page-fields'));
 
     this.state = {
+      username,
+      pageFields,
       allowedFields,
       blocks,
       blockTypes,
       settings,
-      hasBlocks: blocks.length > 0,
-
-      showEditBlock: false,
-      editBlockId: -1,
-      originalEditBlockState: [],
+      viewState: 'home',
       editBlockInfo: [],
-      addBlockInfo: [],
     };
 
-    this.addBlock = this.addBlock.bind(this);
+    this.changeView = this.changeView.bind(this);
     this.highlightGlobal = this.highlightGlobal.bind(this);
-    this.highlightBlock = this.highlightBlock.bind(this);
-    this.removeHighlightBlock = this.removeHighlightBlock.bind(this);
+    this.highlightBlock = this.addHighlight.bind(this);
+    this.removeHighlightBlock = this.removeHighlight.bind(this);
     this.openBlock = this.openBlock.bind(this);
-    this.closeBlock = this.closeBlock.bind(this);
-    this.saveBlock = this.saveBlock.bind(this);
-    this.updateValue = this.updateValue.bind(this);
+  }
+
+  componentDidMount() {
+  }
+
+  /**
+   * A helper function that handles and changes the sidebar view state
+   * Supports addBlock, editBlock and pageSettings
+   *
+   * @param string view
+   * @param boolean clearEditState
+   */
+  changeView(view, clearEditState = false) {
+    this.setState({
+      viewState: view,
+      editBlockInfo: clearEditState ? [] : this.state.editBlockInfo,
+    });
+
+    if (clearEditState) {
+      this.removeHighlight();
+    }
   }
 
   openBlock(e) {
+    this.removeHighlight(e);
     const editBlockId = e.target.id;
-    // console.log(this.state.blocks);
+    document.querySelector(`#e${editBlockId}`).classList.add('fabricator-open');
     const blocks = this.state.blocks.filter(element => element.ID.value === parseInt(e.target.id, 10));
+
     this.setState({
-      showEditBlock: true,
-      editBlockId,
-      originalEditBlockState: blocks[0],
+      viewState: 'editBlock',
       editBlockInfo: blocks[0],
     });
   }
@@ -49,110 +71,24 @@ class Fabric extends React.Component {
   highlightGlobal(e, element) {
     document.querySelector(`.${element}`).classList.add('fabricator-highlight');
   }
-  highlightBlock(e) {
+
+  addHighlight(e) {
     const editBlockId = e.target.id;
     document.querySelector(`#e${editBlockId}`).classList.add('fabricator-highlight');
   }
 
-  removeHighlightBlock(e) {
-    const alreadyHighlighting = document.querySelector('.fabricator-highlight')
+  removeHighlight(e) {
+    const alreadyHighlighting = document.querySelector('.fabricator-highlight');
     if (alreadyHighlighting !== null) {
       alreadyHighlighting.classList.remove('fabricator-highlight');
     }
   }
 
-  addBlock(e) {
-    // get info from block schema
-    this.setState({
-      showEditBlock: true,
-      editBlockId: -1
-    });
-  }
-
-  closeBlock(e) {
-    this.setState({
-      showEditBlock: false,
-      editBlockId: -1,
-      editBlockInfo: [],
-    });
-
-    this.removeHighlightBlock();
-  }
-
-  // getBlockTypes() {
-  //   fetch('/fabricator/api/getBlockTypes', {
-  //     method: 'GET',
-  //     credentials: 'same-origin',
-  //   })
-  //   .then(response => response.json())
-  //   .then((data) => {
-  //     this.setState({
-  //       blockTypes: data,
-  //     });
-  //   });
-  // }
-
-  updateValue(e, key) {
-    const value = e.target.value;
-    this.setState(prevState => ({
-      editBlockInfo: {
-        ...prevState.editBlockInfo,
-        [key]: {
-          ...prevState.editBlockInfo[key],
-          value,
-          hasChanged: true,
-        },
-      },
-    }));
-
-    // update the dom element now...
-    // this might require some re-thinking
-    const id = this.state.editBlockId;
-    let type = this.state.editBlockInfo[key].type.toLowerCase();
-    const element = document.querySelector(`#e${id}`);
-
-    // for demo purposes
-    // this implementation is dangerous and not ideal.
-    // it should be changed to a more robust solution
-    // as it makes assumptions about the dom structure
-
-    // https://www.npmjs.com/package/sanitize-html
-    if (type === 'htmltext') type = 'content';
-    element.querySelector(`[class*="__${type}"]`).innerHTML = value;
-  }
-
-  saveBlock() {
-
-    let changedValues = {};
-
-    Object.entries(this.state.editBlockInfo).forEach(([key, value]) => {
-
-      if ('hasChanged' in value) {
-        changedValues[key] = this.state.editBlockInfo[key];
-      }
-    });
-
-    if (Object.keys(changedValues).length > 0) {
-      fetch('/fabricator/api/saveBlock', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({ id: this.state.editBlockId, data: changedValues }),
-      })
-      .then(res => res.text())
-      .then(data => console.log(data))
-      .catch(error => {
-        console.error(error);
-      });
-    }
-  }
 
   render() {
     const websiteTitle = this.state.settings.Title.value;
     const blocks = this.state.blocks;
-    const renderBlocksList = () => {
+    const renderHomeView = () => {
       return (
         <div className="fabricator-nav-menu__container">
           <div className="fabricator-nav-menu-items">
@@ -162,7 +98,7 @@ class Fabric extends React.Component {
                 role="button"
                 tabIndex={0}
                 onMouseEnter={(e) => this.highlightGlobal(e, 'header')}
-                onMouseLeave={this.removeHighlightBlock}
+                onMouseLeave={this.removeHighlight}
               >
                 Header
               </a>
@@ -173,21 +109,25 @@ class Fabric extends React.Component {
                 role="button"
                 tabIndex={0}
                 onMouseEnter={(e) => this.highlightGlobal(e, 'footer')}
-                onMouseLeave={this.removeHighlightBlock}
+                onMouseLeave={this.removeHighlight}
               >
                 Footer
               </a>
             </div>
           </div>
           <div className="fabricator-nav-menu-items">
-            <div className="title">Page content</div>
+            <div className="content">
+              <div className="title">Page content</div>
+              {blocks.length === 0 && <div>No blocks on this page</div>}
+            </div>
+
             {blocks.map(block => {
               const blockTitle = block.Title.value;
               const blockType = block.Type.value;
               const key = block.ID.value;
               return (
                 <div className="menu__item" key={key}>
-                  <a role="button" tabIndex={0} onClick={this.openBlock} onMouseEnter={this.highlightBlock} onMouseLeave={this.removeHighlightBlock} id={key}>
+                  <a role="button" tabIndex={0} onClick={this.openBlock} onMouseEnter={this.addHighlight} onMouseLeave={this.removeHighlight} id={key}>
                     <div className="menu__item__type">{blockType}</div>
                     <div className="menu__item__title">{blockTitle}</div>
                   </a>
@@ -196,7 +136,7 @@ class Fabric extends React.Component {
             })}
 
             <div className="block-options">
-              <button className="fabricator-button fabricator-button--blue" onClick={this.addBlock}>
+              <button className="fabricator-btn fabricator-btn--blue fabricator-btn__icon--left fabricator-btn__icon-add" onClick={() => this.changeView('addBlock')}>
                 Add a block
               </button>
             </div>
@@ -205,115 +145,88 @@ class Fabric extends React.Component {
       );
     };
 
-    const renderEditBlock = () => {
-      const newBlock = this.state.editBlockId === -1;
-      const info = this.state.editBlockInfo;
+    const renderControls = () => {
 
-      const getTitle = () => {
-        if (this.state.editBlockId === -1) {
-          return 'Add a block';
+      const getBlockType = () => {
+        if (this.state.editBlockInfo.Type) {
+          return this.state.editBlockInfo.Type.value;
         }
-        return this.state.editBlockInfo.Title.value;
+        return 'New Block';
       };
 
-      const renderInput = (elementField, key) => {
-        if (elementField.type === 'Boolean') {
-          return <input type="checkbox" id={elementField.type} name={elementField.type} defaultChecked={parseInt(elementField.value, 10)} />;
-        } else if (elementField.type === 'HTMLText') {
-          return (
-            <textarea
-              className="text-field"
-              rows="10"
-              type="text"
-              name={elementField.type}
-              value={elementField.value}
-              onChange={(e) => this.updateValue(e, key)}
-            />
-          );
-        }
+      if (this.state.viewState === 'editBlock' || this.state.viewState === 'addBlock') {
         return (
-          <input
-            className="text-field"
-            type="text"
-            name={elementField.type}
-            value={elementField.value}
-            onChange={(e) => this.updateValue(e, key)}
-          />
-        );
-
-      };
-
-      const renderNewBlock = () => {
-        const blockTypes = this.state.blockTypes;
-
-        return (
-          <div className="fabricator-input">
-            <label htmlFor="Title">Title</label>
-            <select className="select-field" value="Content">
-              { blockTypes.map(ele => <option key={ele.Title} value={ele.Title}>{ele.Title}</option>)}
-            </select>
-          </div>
-        );
-      };
-
-      const renderEditBlockFields = () => {
-        return Object.keys(this.state.editBlockInfo).map((eleKey, index) => {
-          if (eleKey !== 'ID' && eleKey !== 'Type') {
-            const elementField = this.state.editBlockInfo[eleKey];
-            return (
-              <div key={index} className="fabricator-input">
-                <div className="label">{ eleKey }</div>
-                { renderInput(elementField, eleKey) }
-              </div>
-            );
-          }
-        });
-      };
-
-      const renderFields = () => {
-        if (newBlock) {
-          return renderNewBlock();
-        }
-        return renderEditBlockFields();
-      };
-
-      return (
-        <div className="fabricator-edit-block">
-          <div className="fabricator-edit-block__header">
+          <div className="header__controls">
             <div className="options">
               <div className="title">Edit</div>
-              <button className="fabricator-button fabricator-button--right" onClick={this.closeBlock}>Cancel</button>
+              <button className="fabricator-btn fabricator-btn--bg-none fabricator-btn--right fabricator-btn__icon-close fabricator-btn__icon--left" onClick={() => this.changeView('home', true)}>
+                Cancel
+              </button>
             </div>
-            <div className="title">{getTitle()}</div>
+            <div className="title">{ getBlockType() }</div>
           </div>
-          <div className="fabricator-input__block">
-            { renderFields() }
+        );
+      }
 
-            <div className="fabricator-edit-block-content-footer">
-              <button className="fabricator-button fabricator-button--outline-green" onClick={this.saveBlock}>Save</button>
-            </div>
+      return (
+        <div className="header__content">
+          <h3>{websiteTitle}</h3>
+          <a href="/">View site tree</a>
+        </div>
+      );
+    };
+
+    const renderBlockView = () => {
+      const { viewState } = this.state;
+
+      if (viewState === 'home') {
+        return renderHomeView();
+      }
+
+      if (viewState === 'settings') {
+        return <PageSettings settings={[]} />;
+      }
+
+      if (viewState === 'addBlock') {
+        return (
+          <div className="fabric-edit-block">
+            <NewBlock />;
           </div>
+        );
+      }
+
+      return (
+        <div className="fabric-edit-block">
+          <ViewBlock blockInfo={this.state.editBlockInfo} />
         </div>
       );
     };
 
     return (
       <div>
-        <div className="fabricator-sidebar">
-          <nav className="fabricator-nav-menu">
-            <div className="fabricator-menu-title">
-              <h3>{websiteTitle}</h3>
-              <h5>View site tree</h5>
+        <div className={`fabricator-overlay ${this.state.viewState === 'editBlock' ? 'shown' : ''}`} />
+
+        <div className="fabricator">
+          <div className="fabricator-header">
+            <div className="header__actions">
+              <a href="/" className="username">{ this.state.username }</a>
+
+              <div className="links">
+                <a href={`/admin/pages/edit/show/${this.state.pageFields.ID.value}`} rel="noreferrer" target="_blank">Open CMS</a>
+                <span className="divider">|</span>
+                <a href="/Security/logout">Logout</a>
+              </div>
             </div>
 
-            {this.state.showEditBlock ? renderEditBlock() : renderBlocksList() }
+            { renderControls() }
+          </div>
+          { renderBlockView() }
 
-            <div className="fabricator-page-settings">
-              <button className="fabricator-button fabricator-button--default">
-                Page settings
-              </button>
-            </div>
-          </nav>
+          <div className="fabricator-page-settings">
+            <button className="fabricator-btn fabricator-btn--default fabricator-btn__icon--left fabricator-btn__icon-settings">
+              Page settings
+            </button>
+          </div>
         </div>
       </div>
     );
