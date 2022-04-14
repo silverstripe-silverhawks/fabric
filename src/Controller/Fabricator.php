@@ -142,8 +142,10 @@ class Fabricator extends Controller
 
     public function getRelationDetails(int $id): array
     {
-        $hasOne = [];
-        $hasMany = $this->getHasManyDetailsFromElementID($id);
+
+        $element = $this->getElementById($id);
+        $hasOne = $this->getHasOneFromElement($element);
+        $hasMany = $this->getHasManyFromElement($element);
 
         return [
             'HasOne' => $hasOne,
@@ -151,9 +153,27 @@ class Fabricator extends Controller
         ];
     }
 
+    public function getHasOneFromElement($element): array
+    {
+        $hasOne = [];
+        if ($element->hasOne()) {
+            foreach ($element->hasOne() as $relationship => $class) {
+
+                if ($class === ElementalArea::class) {
+                    continue;
+                }
+
+                $component = $element->getComponent($relationship);
+                Debug::dump($component);
+            }
+        }
+        return $hasOne;
+    }
+
     //
-    public function getHasManyDetailsFromElementID(int $id) {
-        $element = $this->getElementById($id);
+    public function getHasManyFromElement($element): array
+    {
+        // $element = $this->getElementById($id);
         $hasMany = [];
         if ($element->hasMany()) {
             foreach ($element->hasMany() as $relationship => $class) {
