@@ -140,6 +140,17 @@ class Fabricator extends Controller
         return $blockTypes->toNestedArray();
     }
 
+    public function getRelationDetails(int $id): array
+    {
+        $hasOne = [];
+        $hasMany = $this->getHasManyDetailsFromElementID($id);
+
+        return [
+            'HasOne' => $hasOne,
+            'HasMany' => $hasMany,
+        ];
+    }
+
     //
     public function getHasManyDetailsFromElementID(int $id) {
         $element = $this->getElementById($id);

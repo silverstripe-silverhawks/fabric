@@ -1,7 +1,7 @@
 import React from 'react';
-import ViewBlock from './ViewBlock';
-import NewBlock from './NewBlock';
-import PageSettings from './PageSettings';
+import ViewBlock from './components/ViewBlock';
+import NewBlock from './components/NewBlock';
+import PageSettings from './components/PageSettings';
 
 class Fabric extends React.Component {
   constructor(props) {
@@ -52,6 +52,7 @@ class Fabric extends React.Component {
     });
 
     if (clearEditState) {
+      document.querySelector('.fabricator-open').classList.remove('fabricator-open');
       this.removeHighlight();
     }
   }
@@ -90,9 +91,11 @@ class Fabric extends React.Component {
     const blocks = this.state.blocks;
     const renderHomeView = () => {
       return (
-        <div className="fabricator-nav-menu__container">
-          <div className="fabricator-nav-menu-items">
-            <div className="title">Global features</div>
+        <div className="fabricator__content">
+          <div className="fabricator__navigation">
+            <div className="content">
+              <div className="title">Global features</div>
+            </div>
             <div className="menu__item">
               <a
                 role="button"
@@ -115,14 +118,15 @@ class Fabric extends React.Component {
               </a>
             </div>
           </div>
-          <div className="fabricator-nav-menu-items">
+          <div className="fabricator__navigation">
             <div className="content">
               <div className="title">Page content</div>
               {blocks.length === 0 && <div>No blocks on this page</div>}
             </div>
 
             {blocks.map(block => {
-              const blockTitle = block.Title.value;
+              console.log(block);
+              const blockTitle = block.Type.value;
               const blockType = block.Type.value;
               const key = block.ID.value;
               return (
@@ -176,8 +180,10 @@ class Fabric extends React.Component {
       );
     };
 
+    // this needs to change
     const renderBlockView = () => {
       const { viewState } = this.state;
+      const elementAreaId = this.state.pageFields.ElementalAreaID.value;
 
       if (viewState === 'home') {
         return renderHomeView();
@@ -188,17 +194,11 @@ class Fabric extends React.Component {
       }
 
       if (viewState === 'addBlock') {
-        return (
-          <div className="fabric-edit-block">
-            <NewBlock />;
-          </div>
-        );
+        return <NewBlock elementAreaId={elementAreaId} />;
       }
 
       return (
-        <div className="fabric-edit-block">
-          <ViewBlock blockInfo={this.state.editBlockInfo} />
-        </div>
+        <ViewBlock blockInfo={this.state.editBlockInfo} />
       );
     };
 
@@ -207,11 +207,11 @@ class Fabric extends React.Component {
         <div className={`fabricator-overlay ${this.state.viewState === 'editBlock' ? 'shown' : ''}`} />
 
         <div className="fabricator">
-          <div className="fabricator-header">
+          <div className="fabricator__header">
             <div className="header__actions">
               <a href="/" className="username">{ this.state.username }</a>
 
-              <div className="links">
+              <div className="header__links">
                 <a href={`/admin/pages/edit/show/${this.state.pageFields.ID.value}`} rel="noreferrer" target="_blank">Open CMS</a>
                 <span className="divider">|</span>
                 <a href="/Security/logout">Logout</a>
@@ -222,7 +222,7 @@ class Fabric extends React.Component {
           </div>
           { renderBlockView() }
 
-          <div className="fabricator-page-settings">
+          <div className="fabricator__settings">
             <button className="fabricator-btn fabricator-btn--default fabricator-btn__icon--left fabricator-btn__icon-settings">
               Page settings
             </button>
