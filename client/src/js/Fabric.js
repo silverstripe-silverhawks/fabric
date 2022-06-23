@@ -95,6 +95,7 @@ class Fabric extends React.Component {
           <div className="fabricator__navigation">
             <div className="content">
               <div className="title">Global features</div>
+              <TextField name="text" />
             </div>
             <div className="menu__item">
               <a
