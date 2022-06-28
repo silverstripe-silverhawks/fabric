@@ -41,7 +41,8 @@ class Fabricator extends Controller
         return $instance::get()->filter('ID', $id)->first();
     }
 
-    public function getPageInformation(string $className, int $pageId) {
+    public function getPageInformation(string $className, int $pageId)
+    {
         $fields = $this->getFieldsOnPage($className, $pageId);
         $siteConfig = $this->getAllowedSiteConfigData();
 
@@ -51,12 +52,12 @@ class Fabricator extends Controller
         ];
     }
 
-    private function getAllowedFieldsByObject($objects, string $className) {
+    private function getAllowedFieldsByObject($objects, string $className)
+    {
         $allowedFields = [];
         $objectSchema = DataObject::getSchema()->fieldSpecs($className);
         foreach ($objects as $key => $value) {
             if (!in_array($key, $this->disabled_fields)) {
-
                 if ($objectSchema[$key] === 'HTMLText') {
                     $value = htmlentities($value);
                 }
@@ -84,7 +85,8 @@ class Fabricator extends Controller
         return $allowedFields;
     }
 
-    public function getAllowedSiteConfigData() {
+    public function getAllowedSiteConfigData()
+    {
         $allowedSiteConfig = [];
         $siteConfig = SiteConfig::current_site_config()->toMap();
         $objectSchema = SiteConfig::getSchema()->fieldSpecs(SiteConfig::class);
@@ -101,7 +103,8 @@ class Fabricator extends Controller
         return $allowedSiteConfig;
     }
 
-    public function getElementalBlocks(int $elementalAreaId) {
+    public function getElementalBlocks(int $elementalAreaId)
+    {
         $elementalBlocks = [];
         $area = ElementalArea::get()
             ->filter('ID', $elementalAreaId)
@@ -125,7 +128,8 @@ class Fabricator extends Controller
         return $elementalBlocks;
     }
 
-    public function getElementalBlockTypes() {
+    public function getElementalBlockTypes()
+    {
         $definitions = ElementTypeRegistry::generate()->getDefinitions();
 
         $blockTypes = ArrayList::create();
@@ -158,7 +162,6 @@ class Fabricator extends Controller
         $hasOne = [];
         if ($element->hasOne()) {
             foreach ($element->hasOne() as $relationship => $class) {
-
                 if ($class === ElementalArea::class) {
                     continue;
                 }

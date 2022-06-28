@@ -58,7 +58,8 @@ class FabricatorAPIController extends Controller
         return json_encode($blockTypes->toNestedArray());
     }
 
-    public function getBlockSchema(HTTPRequest $request) {
+    public function getBlockSchema(HTTPRequest $request)
+    {
         $id = $request->getVar('blockType');
 
         // $className = ElementTypeRegistry::generate()->getDefinition($id)['class'];
@@ -78,7 +79,8 @@ class FabricatorAPIController extends Controller
         return json_encode($relations);
     }
 
-    public function newBlock(HTTPRequest $request) {
+    public function newBlock(HTTPRequest $request)
+    {
         $elementalAreaId = $request->getVar('elementalAreaId');
         $blockType = $request->getVar('blockType');
         $className = str_replace('\\\\', '\\', $blockType);

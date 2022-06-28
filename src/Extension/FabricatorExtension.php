@@ -13,7 +13,8 @@ use SilverStripe\View\SSViewer;
 
 class FabricatorExtension extends DataExtension
 {
-    public function onAfterInit() {
+    public function onAfterInit()
+    {
         if (is_null(Security::getCurrentUser())) {
             return;
         }

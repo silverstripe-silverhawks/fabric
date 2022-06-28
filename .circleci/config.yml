@@ -1,0 +1,62 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: silverstripe/bespoke-ci-base:3.0.0
+        environment:
+          - DISPLAY=:99
+          - CHROME_BIN=/usr/bin/google-chrome-stable
+          - BASH_ENV=/root/.bashrc
+      - image: circleci/mysql:5.7
+        environment:
+          - MYSQL_ROOT_PASSWORD=ubuntu
+          - MYSQL_DATABASE=circle_test
+          - MYSQL_HOST=127.0.0.1
+
+    working_directory: /var/www/mysite/www
+
+    steps:
+      # Use correct php version
+      - run: php-switch 7.4
+
+      # Start Apache, Nginx and Xvfb
+      - run: sudo service apache2 start
+      - run: sudo service nginx start
+      - run:
+          command: Xvfb :99 -screen 0 1280x1024x24
+          background: true
+
+      - checkout
+
+      # Use correct node version
+      - run: nvm alias default $(cat .nvmrc)
+
+      # Composer Cache + Installation
+      - restore_cache:
+          keys:
+            - v1-composer-
+      - run: composer install -n --prefer-dist
+      - run: composer vendor-expose # always expose: cached content is never exposed automatically
+      # Save all dependancies to cache
+      - save_cache:
+          key: v1-composer-
+          paths:
+            - vendor
+            - resources
+
+      - run: mv .circleci/.env.circleci .env
+      - run: chown -R vagrant:vagrant /var/www/mysite/www
+      - run: chmod g+s /var/www/mysite/www
+
+      # JS/SCSS/PHP Linting
+      - run: composer silverstripe-standards
+
+      # dev/build
+      - run: sudo -u vagrant vendor/bin/sake dev/build flush=1
+
+      # PHP Tests
+      - run: vendor/bin/phpunit --verbose
