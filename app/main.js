@@ -1,4 +1,12 @@
-import { createApp } from 'vue';
-import App from './App.vue';
-const app = createApp(App).mount('#app');
-export { app };
+import { createApp } from 'vue'
+import App from './App.vue'
+import {createPinia} from 'pinia'
+
+
+window.document.addEventListener('DOMContentLoaded', () => {
+  const pinia = createPinia();
+  const app = createApp(App);
+
+  app.use(pinia);
+  app.mount('#fabricator-app')
+ });

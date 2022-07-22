@@ -10,6 +10,7 @@ export default defineConfig({
       name: 'Fabricator'
     },
     rollupOptions: {
+      input: path.resolve(__dirname, 'app/main.js'),
       external: ['vue'],
       output: {
         // Provide global variables to use in the UMD build

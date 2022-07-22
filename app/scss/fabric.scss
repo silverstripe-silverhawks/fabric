@@ -1,5 +1,5 @@
-@import "./variables";
-@import "./mixins";
+@import "variables.scss";
+@import "mixins.scss";
 
 #app {
   width: calc(100% - 360px - 16px);

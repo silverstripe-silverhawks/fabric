@@ -13,11 +13,7 @@ use SilverStripe\View\SSViewer;
 
 class FabricatorExtension extends DataExtension
 {
-    public function onAfterInit() {
-        if (is_null(Security::getCurrentUser())) {
-            return;
-        }
-
+    public function onBeforeInit() {
         $fabricator = new Fabricator();
         $hasElemental = false;
         $elementalAreaId = -1;
@@ -50,17 +46,25 @@ class FabricatorExtension extends DataExtension
             $templateArgs['BlockTypes'] = json_encode($elementalBlocksType);
         }
 
-        $fabricatorReact = SSViewer::execute_template(
+        $fabricatorApp = SSViewer::execute_template(
             'Fabricator',
             $this->owner,
             $templateArgs
         );
 
-        Requirements::javascript('silverstripe/fabricator: dist/fabricator.es.js');
+        Requirements::customScript(<<<JS
+            document.body.insertAdjacentHTML("afterbegin", `{$fabricatorApp}`);
+        JS);
+    }
+
+    public function onAfterInit() {
+        if (is_null(Security::getCurrentUser())) {
+            return;
+        }
+
+        Requirements::javascript('https://unpkg.com/vue@3');
+        Requirements::javascript('silverstripe/fabricator: dist/fabricator.umd.js');
         Requirements::css('silverstripe/fabricator: dist/style.css');
 
-        Requirements::customScript(<<<JS
-            document.body.insertAdjacentHTML("afterbegin", `{$fabricatorReact}`);
-        JS);
     }
 }
