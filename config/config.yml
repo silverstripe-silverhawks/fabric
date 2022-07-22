@@ -1,3 +1,0 @@
-SilverStripe\Fabricator\Extension\FabricatorAPIController:
-  disallowed_fields:
-    - 'RecordClassName'

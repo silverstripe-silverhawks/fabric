@@ -56,8 +56,8 @@ class FabricatorExtension extends DataExtension
             $templateArgs
         );
 
-        Requirements::javascript('silverstripe/fabricator: client/dist/js/bundle.js');
-        Requirements::css('silverstripe/fabricator: client/dist/styles/bundle.css');
+        Requirements::javascript('silverstripe/fabricator: dist/fabricator.es.js');
+        Requirements::css('silverstripe/fabricator: dist/style.css');
 
         Requirements::customScript(<<<JS
             document.body.insertAdjacentHTML("afterbegin", `{$fabricatorReact}`);
