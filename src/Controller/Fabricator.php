@@ -12,6 +12,7 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\ArrayData;
+use SilverStripe\View\SSViewer;
 
 class Fabricator extends Controller
 {
@@ -144,27 +145,55 @@ class Fabricator extends Controller
     {
 
         $element = $this->getElementById($id);
+        $template = $this->getRenderTemplateForElement($element);
+        // $recordInfo = $this->getRecordInfoFromElement($element);
         $hasOne = $this->getHasOneFromElement($element);
         $hasMany = $this->getHasManyFromElement($element);
 
         return [
+            // 'Record' => $recordInfo,
             'HasOne' => $hasOne,
             'HasMany' => $hasMany,
+            'Template' => htmlspecialchars($template, ENT_QUOTES),
         ];
+    }
+
+
+    /**
+     * Let Silverstripe determine which template to use when block is up for editing.
+     *
+     * Concept:
+     * When we switch to edit the block on the front end
+     * it will find and replace the template on the dom with a modified version.
+     */
+    public function getRenderTemplateForElement($element): string
+    {
+        $templates = $element->getRenderTemplates();
+        $chosenTemplate = SSViewer::chooseTemplate($templates);
+        $content = file_get_contents($chosenTemplate);
+
+        // loop through the fields and wrap around with dom element.
+        return $content;
+    }
+
+    public function getRecordInfoFromElement($element): array {
+        Debug::dump($element);
+        // return $this->getAllowedFieldsByObject($element->record->toMap(), $element->RecordClassName);
     }
 
     public function getHasOneFromElement($element): array
     {
+
         $hasOne = [];
         if ($element->hasOne()) {
             foreach ($element->hasOne() as $relationship => $class) {
-
-                if ($class === ElementalArea::class) {
+                if($relationship === 'Parent') {
                     continue;
                 }
 
                 $component = $element->getComponent($relationship);
-                Debug::dump($component);
+                $componentFields = $this->getAllowedFieldsByObject($component->toMap(), $component->ClassName);
+                $hasOne[$relationship][] = $componentFields;
             }
         }
         return $hasOne;
